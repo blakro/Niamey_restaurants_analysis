@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Données générées (régénérables via les notebooks)
+data/processed/
+!data/processed/.gitkeep
+
+# Données brutes volumineuses — décommenter si le CSV ne doit pas être versionné
+# data/raw/*.csv
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Jupyter
+*.ipynb~

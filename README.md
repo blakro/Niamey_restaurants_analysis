@@ -25,7 +25,7 @@ leur type, leur note, leur nombre d'avis et leur position sur la carte.
 4. **Aucun type de cuisine n'est mieux noté qu'un autre** de façon fiable (p = 0,35). Ce qui distingue les concepts, c'est la **demande** (clients par établissement) et la **concurrence**.
 5. **Concepts les plus prometteurs** : **Boulangerie & pâtisserie** (13 établissements, 17,8 avis typiques chacun, top 3 dans 97 % des simulations) ; **Bar & lounge** (12 établissements, 12,5 avis typiques chacun, top 3 dans 95 % des simulations). À comparer avec 3,7 avis pour un restaurant généraliste.
 6. **Concepts saturés : Burger & fast-food** et **Cuisine africaine & locale** — 58 établissements, seulement 2,3 avis chacun ; 54 établissements, seulement 2,7 avis chacun.
-7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri**, chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus**, presque aussi fourni mais nettement plus saturé. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
+7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri** (82 restaurants), chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus** (71 restaurants), soit 2,5× moins de clients par restaurant dans ce dernier. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
 8. **Un site web va de pair avec 8× plus d'avis** (médiane 15,5 contre 2,0, p < 0,001), **mais pas avec une meilleure note** (p = 0,11) : c'est un levier de visibilité, pas de qualité.
 
 **Pistes concrètes (type × lieu)** — un concept prometteur là où il est absent :
@@ -34,7 +34,7 @@ leur type, leur note, leur nombre d'avis et leur position sur la carte.
 - **Bar & lounge** dans le pôle **Château 1 · Issa Béri** : 1 seul établissement de ce type parmi 82 restaurants (4 460 avis au total).
 - **Bar & lounge** dans le pôle **Dangawo · Terminus** : aucun établissement de ce type parmi 71 restaurants (2 244 avis au total).
 
-> ⚠️ Les données viennent d'une recherche « restaurants » sur Google Maps : les boulangeries, bars ou cafés qui ne se présentent pas aussi comme restaurants n'y figurent pas. Avant d'investir, il faut **compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes.
+> ⚠️ Les données proviennent d'une extraction Google Maps centrée sur les restaurants : les boulangeries, bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement sous-représentés, et leur concurrence réelle est donc sous-estimée. Avant d'investir, il faut **compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes.
 
 <!-- RESULTATS:FIN -->
 
@@ -98,7 +98,7 @@ Pour chaque type de restaurant (et pour chaque zone), on se pose **trois questio
 
 | Question | Ce qu'on mesure | Importance |
 |---|---|---|
-| 👥 **Y a-t-il des clients ?** | Le nombre d'avis d'un établissement typique. Plus il y a d'avis, plus il y a de clients. | 45 % |
+| 👥 **Y a-t-il des clients ?** | Le nombre d'avis d'un établissement typique. En général, plus un lieu a de clients, plus il reçoit d'avis. | 45 % |
 | 🏪 **Y a-t-il peu de concurrents ?** | Le nombre d'établissements du même type. | 35 % |
 | 📈 **Peut-on faire mieux que l'existant ?** | La note moyenne : si les clients sont moyennement satisfaits, un nouveau venu de qualité a sa chance. | 20 % |
 
@@ -139,9 +139,9 @@ et peu de concurrents. En bas à droite : marché saturé.
 
 - **Un avis n'est pas une vente.** Le nombre d'avis Google donne une idée de la fréquentation, mais
   beaucoup de clients n'en laissent jamais, surtout dans les lieux populaires.
-- **Tout le monde n'est pas sur Google Maps.** Les données viennent d'une recherche « restaurants » :
-  les boulangeries, bars ou cafés qui ne se présentent pas aussi comme restaurants n'y sont pas, et une
-  partie des restaurants de la ville n'a pas de fiche du tout.
+- **Tout le monde n'est pas sur Google Maps.** L'extraction est centrée sur les restaurants : les
+  boulangeries, bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement
+  sous-représentés, et une partie des restaurants de la ville n'a pas de fiche du tout.
 - **Les quartiers sont approximatifs.** On utilise le centre de chaque quartier, pas ses limites officielles.
 - **C'est une photo à un instant donné**, sans historique des ouvertures et fermetures.
 
@@ -159,7 +159,7 @@ concurrents, observer la fréquentation, parler aux habitants), pas des certitud
 | **Pôle de restauration** | Groupe d'au moins 4 restaurants à moins de 500 m les uns des autres. |
 | **Plus Code** | Adresse GPS courte inventée par Google (ex. `G476+RX4`). |
 | **Score d'opportunité** | Note de 0 à 1 combinant clients, concurrence et marge de progression. |
-| **p (p-value)** | Probabilité qu'une différence observée soit due au hasard. En dessous de 0,05, on considère qu'elle est réelle. |
+| **p (p-value)** | Probabilité d'observer une différence au moins aussi grande s'il n'y en avait en réalité aucune. En dessous de 0,05, on considère que la différence est réelle et pas un effet du hasard. |
 | **Confiance** | *Bonne* si le groupe compte au moins 8 établissements avec 10 avis ou plus ; *Faible* en dessous de 4. |
 
 ---

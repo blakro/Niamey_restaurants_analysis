@@ -25,6 +25,11 @@ RENAME_MAP = {
 
 PLUS_CODE_RE = re.compile(r"[23456789CFGHJMPQRVWX]{4,8}\+[23456789CFGHJMPQRVWX]{2,3}", re.IGNORECASE)
 
+KEPT_LABEL = "Restaurants retenus pour l'analyse"
+
+# Noms trop génériques pour signaler une enseigne (« Fast food », « Restaurant »...).
+GENERIC_NAME_WORDS = {"restaurant", "restaurent", "resto", "fast", "food", "fastfood", "snack", "cafe", "bar"}
+
 TIER_BINS = [
     (0, 0, "0 · Aucun avis"),
     (1, 4, "1 · 1 à 4 avis"),
@@ -114,7 +119,8 @@ def clean(df_raw: pd.DataFrame) -> tuple[pd.DataFrame, CleaningLog]:
     before = len(df)
     df = df[~df.duplicated(["name_norm", "street_norm"])]
     log.add("Doublons probables supprimés (même nom et même adresse)", before - len(df))
-    df["is_chain"] = df.duplicated("name_norm", keep=False)
+    generic_name = df["name_norm"].map(lambda n: set(n.split()) <= GENERIC_NAME_WORDS)
+    df["is_chain"] = df.duplicated("name_norm", keep=False) & ~generic_name
 
     # 6. Type de restaurant (concept) et exclusion des commerces non-restaurants.
     df = add_concepts(df, config.NON_FOOD_CATEGORIES)
@@ -139,7 +145,7 @@ def clean(df_raw: pd.DataFrame) -> tuple[pd.DataFrame, CleaningLog]:
     df["reliability_tier"] = df["reviews_count"].map(reliability_tier)
     df.attrs["market_mean_score"] = float(m)
 
-    log.add("Restaurants retenus pour l'analyse", len(df))
+    log.add(KEPT_LABEL, len(df))
 
     cols = [
         "name", "concept", "concept_source", "category", "is_chain",

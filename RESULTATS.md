@@ -12,10 +12,10 @@
 4. **Aucun type de cuisine n'est mieux noté qu'un autre** de façon fiable (p = 0,35). Ce qui distingue les concepts, c'est la **demande** (clients par établissement) et la **concurrence**.
 5. **Concepts les plus prometteurs** : **Boulangerie & pâtisserie** (13 établissements, 17,8 avis typiques chacun, top 3 dans 97 % des simulations) ; **Bar & lounge** (12 établissements, 12,5 avis typiques chacun, top 3 dans 95 % des simulations). À comparer avec 3,7 avis pour un restaurant généraliste.
 6. **Concepts saturés : Burger & fast-food** et **Cuisine africaine & locale** — 58 établissements, seulement 2,3 avis chacun ; 54 établissements, seulement 2,7 avis chacun.
-7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri**, chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus**, presque aussi fourni mais nettement plus saturé. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
+7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri** (82 restaurants), chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus** (71 restaurants), soit 2,5× moins de clients par restaurant dans ce dernier. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
 8. **Un site web va de pair avec 8× plus d'avis** (médiane 15,5 contre 2,0, p < 0,001), **mais pas avec une meilleure note** (p = 0,11) : c'est un levier de visibilité, pas de qualité.
 
-> ⚠️ Les données viennent d'une recherche « restaurants » sur Google Maps : les boulangeries, bars ou cafés qui ne se présentent pas aussi comme restaurants n'y figurent pas. Avant d'investir, il faut **compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes.
+> ⚠️ Les données proviennent d'une extraction Google Maps centrée sur les restaurants : les boulangeries, bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement sous-représentés, et leur concurrence réelle est donc sous-estimée. Avant d'investir, il faut **compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes.
 
 ## 1. Les données
 
@@ -174,7 +174,7 @@ Pour les types les plus prometteurs, les pôles où ils sont absents (ou presque
 
 - **Avis ≠ ventes.** Le nombre d'avis Google sert d'indicateur de fréquentation, mais beaucoup de clients
   ne laissent jamais d'avis, surtout dans les établissements populaires et informels.
-- **Données incomplètes.** Recherche « restaurants » uniquement ; 32 % des
+- **Données incomplètes.** Extraction centrée sur les restaurants ; 32 % des
   établissements n'ont pas de position exploitable ; une partie des restaurants de Niamey n'est pas sur
   Google Maps.
 - **Petits groupes.** Plusieurs types et pôles comptent moins de 15 établissements : la colonne

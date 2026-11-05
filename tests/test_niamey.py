@@ -91,6 +91,21 @@ def test_clean_dataset_is_consistent(clean_df):
     assert clean_df.loc[~clean_df["is_rated"], "score_bayes"].isna().all()
 
 
+def test_chains_ignore_generic_names(clean_df):
+    chains = set(clean_df.loc[clean_df["is_chain"], "name"].map(normalize_text))
+    assert "o takoss" in chains                      # vraie enseigne à deux adresses
+    assert not chains & {"fast food", "fastfood"}    # simple nom générique, pas une chaîne
+
+
+def test_funnel_steps_follow_labels():
+    from niamey.pipeline import funnel_steps
+    _, log = cleaning.clean(cleaning.load_raw())
+    log.add("dont : exemple", 1)
+    steps = funnel_steps(log)["étape"].tolist()
+    assert steps[0].startswith("Fiches") and steps[1] == cleaning.KEPT_LABEL
+    assert all(s.startswith("dont") for s in steps[2:])
+
+
 def test_robustness_is_reproducible(clean_df):
     groups = ["Pizzeria", "Bar & lounge", "Burger & fast-food"]
     a = opportunity.robustness(clean_df, "concept", groups, n_sim=200)

@@ -91,6 +91,21 @@ def test_clean_dataset_is_consistent(clean_df):
     assert clean_df.loc[~clean_df["is_rated"], "score_bayes"].isna().all()
 
 
+def test_chains_ignore_generic_names(clean_df):
+    chains = set(clean_df.loc[clean_df["is_chain"], "name"].map(normalize_text))
+    assert "o takoss" in chains                      # vraie enseigne à deux adresses
+    assert not chains & {"fast food", "fastfood"}    # simple nom générique, pas une chaîne
+
+
+def test_funnel_steps_follow_labels():
+    from niamey.pipeline import funnel_steps
+    _, log = cleaning.clean(cleaning.load_raw())
+    log.add("dont : exemple", 1)
+    steps = funnel_steps(log)["étape"].tolist()
+    assert steps[0].startswith("Fiches") and steps[1] == cleaning.KEPT_LABEL
+    assert all(s.startswith("dont") for s in steps[2:])
+
+
 def test_robustness_is_reproducible(clean_df):
     groups = ["Pizzeria", "Bar & lounge", "Burger & fast-food"]
     a = opportunity.robustness(clean_df, "concept", groups, n_sim=200)
@@ -107,3 +122,25 @@ def test_update_readme_only_touches_the_block(tmp_path, monkeypatch):
     assert report.update_readme(None, path=readme)
     text = readme.read_text(encoding="utf-8")
     assert text == f"Intro\n{report.START}\nnouveau\n{report.END}\nFin\n"
+
+
+# ── Page d'accueil ───────────────────────────────────────────────────────────
+def test_md_inline_is_safe():
+    from niamey.homepage import md_inline
+    assert md_inline("**gras** et *note corrigée*") == "<strong>gras</strong> et <em>note corrigée</em>"
+    assert "<script>" not in md_inline("<script>alert(1)</script>")
+
+
+def test_homepage_links_exist_and_numbers_match():
+    import re as _re
+    from niamey import homepage, pipeline
+    r = pipeline.compute()
+    page = homepage.build(r)
+    local = [u for u in _re.findall(r'(?:href|src)="([^"]+)"', page) if not u.startswith("http")]
+    assert local, "aucun lien local trouvé"
+    for u in local:
+        assert (config.DOCS_DIR / u).exists(), u
+    from html import escape
+    for label, value in report.dashboard_kpis(r):          # mêmes chiffres que le README
+        assert escape(value) in page and escape(label) in page
+    assert report.readme_block(r) == report.readme_block(r)  # pas de date : sortie stable

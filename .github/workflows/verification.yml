@@ -1,0 +1,65 @@
+# Vérification automatique : à chaque modification, on s'assure que
+#   1. les tests passent ;
+#   2. l'analyse complète se relance sans erreur ;
+#   3. le README, RESULTATS.md et la page d'accueil du site affichent bien les
+#      chiffres que donne le code actuel (sinon : lancer `python run_pipeline.py`
+#      puis enregistrer les fichiers modifiés) ;
+#   4. les 4 notebooks s'exécutent de bout en bout.
+name: Vérification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifier:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.13"]   # version minimale annoncée dans le README + version récente
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v5
+
+      - name: Installer Python ${{ matrix.python }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Tests automatiques
+        run: python -m pytest -q
+
+      - name: Relancer toute l'analyse
+        run: python run_pipeline.py
+
+      - name: Vérifier que le README, RESULTATS.md et la page d'accueil sont à jour
+        run: |
+          if ! git diff --exit-code -- README.md RESULTATS.md docs/index.html; then
+            echo "::error::Les résultats publiés ne correspondent plus au code ou aux données. Lancez 'python run_pipeline.py' puis enregistrez (commit) les fichiers modifiés."
+            exit 1
+          fi
+
+      - name: Exécuter les notebooks
+        run: |
+          mkdir -p "$RUNNER_TEMP/notebooks"
+          for nb in notebooks/*.ipynb; do
+            jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=600 \
+              --output-dir "$RUNNER_TEMP/notebooks" "$nb"
+          done

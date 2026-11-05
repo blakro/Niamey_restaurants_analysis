@@ -6,7 +6,6 @@
 """
 from __future__ import annotations
 
-import datetime as dt
 import re
 
 import pandas as pd
@@ -71,9 +70,12 @@ def findings(r) -> list[str]:
         hi, lo = big.sort_values("avis_typique", ascending=False).index
         items.append(
             f"**Où ?** {fr(s['pct_geo_in_top2_poles'])} % des restaurants localisés sont concentrés dans "
-            f"2 pôles. Dans le pôle **{hi}**, chaque restaurant attire {fr(big.loc[hi, 'avis_typique'], 1)} avis "
-            f"typiques, contre {fr(big.loc[lo, 'avis_typique'], 1)} dans le pôle **{lo}**, presque aussi "
-            f"fourni mais nettement plus saturé. Par arrondissement, **{arr_top.name}** arrive en tête "
+            f"2 pôles. Dans le pôle **{hi}** ({int(big.loc[hi, 'nb_etablissements'])} restaurants), chaque "
+            f"restaurant attire {fr(big.loc[hi, 'avis_typique'], 1)} avis typiques, contre "
+            f"{fr(big.loc[lo, 'avis_typique'], 1)} dans le pôle **{lo}** "
+            f"({int(big.loc[lo, 'nb_etablissements'])} restaurants), soit "
+            f"{fr(big.loc[hi, 'avis_typique'] / big.loc[lo, 'avis_typique'], 1)}× moins de clients par "
+            f"restaurant dans ce dernier. Par arrondissement, **{arr_top.name}** arrive en tête "
             f"(n°1 dans {fr(arr_top.pct_top3)} % des simulations).")
     items.append(
         f"**Un site web va de pair avec {fr(ratio_web)}× plus d'avis** (médiane {fr(s['median_reviews_web'], 1)} "
@@ -93,15 +95,18 @@ def leads_lines(r, n: int = 3) -> list[str]:
 
 
 CAVEAT = (
-    "⚠️ Les données viennent d'une recherche « restaurants » sur Google Maps : les boulangeries, bars ou "
-    "cafés qui ne se présentent pas aussi comme restaurants n'y figurent pas. Avant d'investir, il faut "
+    "⚠️ Les données proviennent d'une extraction Google Maps centrée sur les restaurants : les boulangeries, "
+    "bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement sous-représentés, et leur "
+    "concurrence réelle est donc sous-estimée. Avant d'investir, il faut "
     "**compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes."
 )
 
 
 def readme_block(r) -> str:
-    today = dt.date.today().strftime("%d/%m/%Y")
-    parts = [START, "", f"*Chiffres calculés automatiquement le {today}.*", ""]
+    # Pas de date : le bloc ne change que si les données ou le code changent
+    # (la vérification automatique sur GitHub compare ce bloc au résultat attendu).
+    parts = [START, "", "*Chiffres calculés automatiquement par `python run_pipeline.py` — "
+             "ne pas modifier ce bloc à la main.*", ""]
     parts += [f"{i}. {t}" for i, t in enumerate(findings(r), 1)]
     if len(r.leads):
         parts += ["", "**Pistes concrètes (type × lieu)** — un concept prometteur là où il est absent :", ""]
@@ -192,8 +197,8 @@ def write_results_md(r, path=config.RESULTS_MD) -> None:
 
     md = f"""# Résultats détaillés
 
-> Ce fichier est **généré automatiquement** par `python run_pipeline.py`
-> (dernière exécution : {dt.date.today().strftime("%d/%m/%Y")}). Ne pas le modifier à la main.
+> Ce fichier est **généré automatiquement** par `python run_pipeline.py` à partir des données de
+> `data/raw/`. Ne pas le modifier à la main : il est recalculé et vérifié automatiquement.
 > Pour l'explication de la démarche, voir le [README](README.md).
 
 ## En bref
@@ -297,7 +302,7 @@ Pour les types les plus prometteurs, les pôles où ils sont absents (ou presque
 
 - **Avis ≠ ventes.** Le nombre d'avis Google sert d'indicateur de fréquentation, mais beaucoup de clients
   ne laissent jamais d'avis, surtout dans les établissements populaires et informels.
-- **Données incomplètes.** Recherche « restaurants » uniquement ; {fr(100 - s['pct_geocoded'])} % des
+- **Données incomplètes.** Extraction centrée sur les restaurants ; {fr(100 - s['pct_geocoded'])} % des
   établissements n'ont pas de position exploitable ; une partie des restaurants de Niamey n'est pas sur
   Google Maps.
 - **Petits groupes.** Plusieurs types et pôles comptent moins de 15 établissements : la colonne

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from . import cleaning, config, geo, maps, opportunity, report, stats, viz
+from . import cleaning, config, geo, homepage, maps, opportunity, report, stats, viz
 
 
 @dataclass
@@ -72,10 +72,22 @@ def export_tables(r: Results) -> None:
     r.leads.to_csv(config.COMBOS_CSV, index=False, encoding="utf-8-sig")
 
 
+def funnel_steps(log: cleaning.CleaningLog) -> pd.DataFrame:
+    """Étapes du « parcours des données » : export, restaurants retenus, puis les « dont »."""
+    t = log.to_frame()
+    keep = (t.index == 0) | (t["étape"] == cleaning.KEPT_LABEL) | t["étape"].str.startswith("dont")
+    return t[keep].reset_index(drop=True)
+
+
+def all_poles(g: pd.DataFrame) -> pd.DataFrame:
+    """Indicateurs de TOUS les pôles (y compris ceux trop petits pour être classés)."""
+    return opportunity.group_metrics(g[g["pole_id"] >= 0], "pole")
+
+
 def make_figures(r: Results, show: bool = False) -> None:
     s = r.stats
     figs = [
-        viz.fig_funnel(r.log.to_frame().iloc[[0, -4, -3, -2, -1]].reset_index(drop=True), publish=True),
+        viz.fig_funnel(funnel_steps(r.log), publish=True),
         viz.fig_bayes(r.geo, publish=True),
         viz.fig_reviews_tiers(r.geo),
         viz.fig_concepts(r.concepts_all, publish=True),
@@ -100,9 +112,10 @@ def run_all(verbose: bool = True) -> Results:
     r = compute()
     export_tables(r)
     make_figures(r)
-    maps.build_map(r.geo, r.poles)
+    maps.build_map(r.geo, all_poles(r.geo))
     report.write_results_md(r)
     report.update_readme(r)
+    homepage.write(r)
     if verbose:
         print(r.log.to_frame().to_string(index=False))
         print()

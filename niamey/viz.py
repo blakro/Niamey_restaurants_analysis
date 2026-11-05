@@ -27,6 +27,11 @@ BLUE_DARK = "#184f95"
 ORANGE = "#eb6834"      # 2e série quand il en faut une
 GRAY = "#c3c2b7"        # contexte
 
+# adjustText s'arrête par défaut après 1 seconde de calcul : le placement des
+# étiquettes dépendait alors de la vitesse de la machine. Un nombre fixe
+# d'itérations rend les images identiques d'une exécution à l'autre.
+ADJUST_ITER = 1000
+
 plt.rcParams.update({
     "figure.facecolor": SURFACE,
     "axes.facecolor": SURFACE,
@@ -194,7 +199,7 @@ def fig_matrix(scores: pd.DataFrame, robust: pd.DataFrame, publish: bool = False
                              fontweight="bold" if highlight[name] else "normal", va="center", zorder=5))
     try:
         from adjustText import adjust_text
-        adjust_text(texts, ax=ax, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6))
+        adjust_text(texts, ax=ax, iter_lim=ADJUST_ITER, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6))
     except ImportError:
         pass
     ax.text(0.01, 0.99, "↖ OPPORTUNITÉ : peu de concurrents, beaucoup de clients",
@@ -247,7 +252,7 @@ def fig_static_map(g: pd.DataFrame, publish: bool = False):
              for p, r in centers.iterrows()]
     try:
         from adjustText import adjust_text
-        adjust_text(texts, ax=ax, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6))
+        adjust_text(texts, ax=ax, iter_lim=ADJUST_ITER, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6))
     except ImportError:
         pass
     ax.set_aspect(1 / np.cos(np.radians(config.NIAMEY_LAT)))

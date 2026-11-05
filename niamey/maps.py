@@ -11,14 +11,31 @@ from folium.plugins import Fullscreen, HeatMap, MarkerCluster
 from . import config
 
 # Rampe ordinale à une seule teinte (bleu) : plus c'est foncé, meilleure est la note.
+# Trois niveaux seulement : avec quatre, les deux bleus clairs étaient indiscernables
+# (écart de luminosité insuffisant, vérifié avec un validateur de palette).
 SCORE_LEVELS = [
-    (4.5, "#104281", "4,5★ et plus — excellent"),
+    (4.5, "#0d366b", "4,5★ et plus — excellent"),
     (4.0, "#2a78d6", "4,0 à 4,5★ — bon"),
-    (3.5, "#6da7ec", "3,5 à 4,0★ — moyen"),
-    (0.0, "#86b6ef", "moins de 3,5★ — faible"),
+    (0.0, "#86b6ef", "moins de 4,0★ — moyen ou faible"),
 ]
 NO_SCORE = ("#898781", "pas encore noté")
 POLE_COLOR = "#eb6834"
+
+# Groupes de points en gris neutre : les couleurs par défaut du plugin (vert,
+# jaune, orange) laissaient croire à une information de qualité.
+CLUSTER_ICON_JS = """
+function(cluster) {
+  var n = cluster.getChildCount();
+  var s = n < 10 ? 30 : (n < 50 ? 38 : 46);
+  return L.divIcon({
+    html: '<div style="width:' + s + 'px;height:' + s + 'px;border-radius:50%;'
+        + 'background:rgba(82,81,78,.88);color:#fff;font:600 12px system-ui,sans-serif;'
+        + 'line-height:' + s + 'px;text-align:center;'
+        + 'box-shadow:0 0 0 3px rgba(255,255,255,.85)">' + n + '</div>',
+    className: 'groupe-restaurants', iconSize: L.point(s, s)
+  });
+}
+"""
 
 
 def score_color(score) -> str:
@@ -42,10 +59,9 @@ def popup_html(r: pd.Series) -> str:
     e = html.escape
     raw = f"{_fmt(r['score_raw'])}★ sur {int(r['reviews_count'])} avis" if pd.notna(r["score_raw"]) else "pas de note"
     bayes = f"{_fmt(r['score_bayes'], 2)}★" if pd.notna(r["score_bayes"]) else "—"
+    header = (f"<b style='font-size:14px'>{e(str(r['name']))}</b><br>"
+              f"<span style='color:#52514e'>{e(r['concept'])}</span><hr style='margin:6px 0'>")
     lines = [
-        f"<b style='font-size:14px'>{e(str(r['name']))}</b>",
-        f"<span style='color:#52514e'>{e(r['concept'])}</span>",
-        "<hr style='margin:6px 0'>",
         f"Note Google : {raw}",
         f"Note corrigée : <b>{bayes}</b>",
         f"Zone : {e(str(r['pole']))}" + (f" · quartier ≈ {e(str(r['quartier']))}" if pd.notna(r.get("quartier")) else ""),
@@ -56,7 +72,8 @@ def popup_html(r: pd.Series) -> str:
         lines.append(f"<a href='{e(str(r['website']))}' target='_blank' rel='noopener'>Site web</a>")
     if pd.notna(r.get("maps_url")):
         lines.append(f"<a href='{e(str(r['maps_url']))}' target='_blank' rel='noopener'>Voir sur Google Maps</a>")
-    return "<div style='font-family:system-ui,sans-serif;font-size:12px;min-width:210px;line-height:1.5'>" + "<br>".join(lines) + "</div>"
+    return ("<div style='font-family:system-ui,sans-serif;font-size:12px;min-width:210px;line-height:1.5'>"
+            + header + "<br>".join(lines) + "</div>")
 
 
 def _marker(r: pd.Series, color: str | None = None) -> folium.CircleMarker:
@@ -78,18 +95,26 @@ def _legend(zones: pd.DataFrame) -> str:
         f"<span style='color:#52514e'>{int(r.nb_etablissements)} · {_fmt(r.avis_typique)} avis/resto</span></div>"
         for z, r in zones.sort_values("nb_etablissements", ascending=False).iterrows()
     )
+    # Légende repliable : ouverte sur grand écran, repliée sur téléphone (où elle
+    # masquait la moitié de la carte).
     return f"""
-    <div style="position:fixed;bottom:24px;left:12px;z-index:1000;max-width:300px;
+    <details id="legende-carte" open style="position:fixed;bottom:56px;left:12px;z-index:1000;max-width:300px;
          background:rgba(252,252,251,.97);padding:10px 14px;border-radius:10px;
          box-shadow:0 2px 10px rgba(0,0,0,.18);font-family:system-ui,sans-serif;font-size:12px;color:#0b0b0b">
-      <b>Note corrigée</b> (taille du point = nombre d'avis)
+      <summary style="cursor:pointer;font-weight:700">Légende</summary>
+      <div style="margin-top:4px"><b>Note corrigée</b> (taille du point = nombre d'avis)</div>
       {rows}
+      <div><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#52514e;
+           vertical-align:-2px"></span> groupe de restaurants (zoomer pour les voir)</div>
       <details style="margin-top:6px"><summary style="cursor:pointer"><b>Pôles de restauration</b></summary>
         <div style="max-height:180px;overflow:auto;margin-top:4px">{zone_rows}</div>
       </details>
       <div style="color:#52514e;margin-top:6px;font-size:11px">
         Bouton « calques » en haut à droite : filtrer par type de restaurant.</div>
-    </div>"""
+    </details>
+    <script>
+      if (window.innerWidth < 600) document.getElementById("legende-carte").removeAttribute("open");
+    </script>"""
 
 
 def build_map(g: pd.DataFrame, zones: pd.DataFrame, path=config.PORTFOLIO_MAP) -> folium.Map:
@@ -103,7 +128,7 @@ def build_map(g: pd.DataFrame, zones: pd.DataFrame, path=config.PORTFOLIO_MAP) -
 
     # 1. Tous les restaurants, couleur = note corrigée.
     fg_all = folium.FeatureGroup(name=f"Tous les restaurants ({len(geo)})", show=True)
-    cluster = MarkerCluster(options={"disableClusteringAtZoom": 15})
+    cluster = MarkerCluster(options={"disableClusteringAtZoom": 15}, icon_create_function=CLUSTER_ICON_JS)
     for _, r in geo.iterrows():
         _marker(r).add_to(cluster)
     cluster.add_to(fg_all)

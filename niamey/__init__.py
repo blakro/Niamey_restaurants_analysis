@@ -8,5 +8,6 @@ Modules, dans l'ordre du processus :
     opportunity  → modèle d'opportunité (quel type ? où ?) + simulations
     viz / maps   → graphiques et carte interactive
     report       → RESULTATS.md et bloc de résultats du README
+    homepage     → page d'accueil du site (docs/index.html)
     pipeline     → enchaîne le tout
 """

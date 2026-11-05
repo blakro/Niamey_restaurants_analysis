@@ -6,6 +6,7 @@ Ce projet part d'une question simple que se pose tout futur restaurateur :
 Pour y répondre, on a analysé **les fiches Google Maps de près de 500 établissements** de la ville :
 leur type, leur note, leur nombre d'avis et leur position sur la carte.
 
+👉 **[Voir le site du projet](https://blakro.github.io/Niamey_restaurants_analysis/)** : l'essentiel en une page, avec la carte
 👉 **[Ouvrir la carte interactive](https://blakro.github.io/Niamey_restaurants_analysis/map_PORTFOLIO.html)** : tous les restaurants, filtrables par type, avec leur fiche
 👉 **[Lire les résultats détaillés](RESULTATS.md)** : tous les chiffres et tableaux
 
@@ -17,7 +18,7 @@ leur type, leur note, leur nombre d'avis et leur position sur la carte.
 
 <!-- RESULTATS:DEBUT -->
 
-*Chiffres calculés automatiquement le 05/11/2026.*
+*Chiffres calculés automatiquement par `python run_pipeline.py` — ne pas modifier ce bloc à la main.*
 
 1. **483 restaurants analysés** (sur 490 fiches Google Maps, après suppression des doublons et des commerces qui ne sont pas des restaurants).
 2. **61 % des restaurants ont moins de 5 avis** : la réputation en ligne reste très peu développée à Niamey. Seuls 127 restaurants (26 %) ont une note vraiment solide (au moins 10 avis).
@@ -25,7 +26,7 @@ leur type, leur note, leur nombre d'avis et leur position sur la carte.
 4. **Aucun type de cuisine n'est mieux noté qu'un autre** de façon fiable (p = 0,35). Ce qui distingue les concepts, c'est la **demande** (clients par établissement) et la **concurrence**.
 5. **Concepts les plus prometteurs** : **Boulangerie & pâtisserie** (13 établissements, 17,8 avis typiques chacun, top 3 dans 97 % des simulations) ; **Bar & lounge** (12 établissements, 12,5 avis typiques chacun, top 3 dans 95 % des simulations). À comparer avec 3,7 avis pour un restaurant généraliste.
 6. **Concepts saturés : Burger & fast-food** et **Cuisine africaine & locale** — 58 établissements, seulement 2,3 avis chacun ; 54 établissements, seulement 2,7 avis chacun.
-7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri**, chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus**, presque aussi fourni mais nettement plus saturé. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
+7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri** (82 restaurants), chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus** (71 restaurants), soit 2,5× moins de clients par restaurant dans ce dernier. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
 8. **Un site web va de pair avec 8× plus d'avis** (médiane 15,5 contre 2,0, p < 0,001), **mais pas avec une meilleure note** (p = 0,11) : c'est un levier de visibilité, pas de qualité.
 
 **Pistes concrètes (type × lieu)** — un concept prometteur là où il est absent :
@@ -34,7 +35,7 @@ leur type, leur note, leur nombre d'avis et leur position sur la carte.
 - **Bar & lounge** dans le pôle **Château 1 · Issa Béri** : 1 seul établissement de ce type parmi 82 restaurants (4 460 avis au total).
 - **Bar & lounge** dans le pôle **Dangawo · Terminus** : aucun établissement de ce type parmi 71 restaurants (2 244 avis au total).
 
-> ⚠️ Les données viennent d'une recherche « restaurants » sur Google Maps : les boulangeries, bars ou cafés qui ne se présentent pas aussi comme restaurants n'y figurent pas. Avant d'investir, il faut **compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes.
+> ⚠️ Les données proviennent d'une extraction Google Maps centrée sur les restaurants : les boulangeries, bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement sous-représentés, et leur concurrence réelle est donc sous-estimée. Avant d'investir, il faut **compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes.
 
 <!-- RESULTATS:FIN -->
 
@@ -98,7 +99,7 @@ Pour chaque type de restaurant (et pour chaque zone), on se pose **trois questio
 
 | Question | Ce qu'on mesure | Importance |
 |---|---|---|
-| 👥 **Y a-t-il des clients ?** | Le nombre d'avis d'un établissement typique. Plus il y a d'avis, plus il y a de clients. | 45 % |
+| 👥 **Y a-t-il des clients ?** | Le nombre d'avis d'un établissement typique. En général, plus un lieu a de clients, plus il reçoit d'avis. | 45 % |
 | 🏪 **Y a-t-il peu de concurrents ?** | Le nombre d'établissements du même type. | 35 % |
 | 📈 **Peut-on faire mieux que l'existant ?** | La note moyenne : si les clients sont moyennement satisfaits, un nouveau venu de qualité a sa chance. | 20 % |
 
@@ -139,9 +140,9 @@ et peu de concurrents. En bas à droite : marché saturé.
 
 - **Un avis n'est pas une vente.** Le nombre d'avis Google donne une idée de la fréquentation, mais
   beaucoup de clients n'en laissent jamais, surtout dans les lieux populaires.
-- **Tout le monde n'est pas sur Google Maps.** Les données viennent d'une recherche « restaurants » :
-  les boulangeries, bars ou cafés qui ne se présentent pas aussi comme restaurants n'y sont pas, et une
-  partie des restaurants de la ville n'a pas de fiche du tout.
+- **Tout le monde n'est pas sur Google Maps.** L'extraction est centrée sur les restaurants : les
+  boulangeries, bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement
+  sous-représentés, et une partie des restaurants de la ville n'a pas de fiche du tout.
 - **Les quartiers sont approximatifs.** On utilise le centre de chaque quartier, pas ses limites officielles.
 - **C'est une photo à un instant donné**, sans historique des ouvertures et fermetures.
 
@@ -159,7 +160,7 @@ concurrents, observer la fréquentation, parler aux habitants), pas des certitud
 | **Pôle de restauration** | Groupe d'au moins 4 restaurants à moins de 500 m les uns des autres. |
 | **Plus Code** | Adresse GPS courte inventée par Google (ex. `G476+RX4`). |
 | **Score d'opportunité** | Note de 0 à 1 combinant clients, concurrence et marge de progression. |
-| **p (p-value)** | Probabilité qu'une différence observée soit due au hasard. En dessous de 0,05, on considère qu'elle est réelle. |
+| **p (p-value)** | Probabilité d'observer une différence au moins aussi grande s'il n'y en avait en réalité aucune. En dessous de 0,05, on considère que la différence est réelle et pas un effet du hasard. |
 | **Confiance** | *Bonne* si le groupe compte au moins 8 établissements avec 10 avis ou plus ; *Faible* en dessous de 4. |
 
 ---
@@ -177,7 +178,8 @@ pip install -r requirements.txt
 ```
 
 Relancer **toute** l'analyse en une commande (environ 15 secondes). Elle régénère les tableaux, les
-graphiques, la carte, [`RESULTATS.md`](RESULTATS.md) et le bloc « Ce que disent les données » de ce README :
+graphiques, la carte, [`RESULTATS.md`](RESULTATS.md), la page d'accueil du site et le bloc « Ce que disent
+les données » de ce README :
 
 ```bash
 python run_pipeline.py
@@ -198,6 +200,25 @@ jupyter lab
 </details>
 
 <details>
+<summary><b>Vérification automatique</b></summary>
+
+[![Vérification](https://github.com/blakro/Niamey_restaurants_analysis/actions/workflows/verification.yml/badge.svg)](https://github.com/blakro/Niamey_restaurants_analysis/actions/workflows/verification.yml)
+
+À chaque modification envoyée sur GitHub, l'onglet **Actions** relance automatiquement, avec Python 3.11
+et 3.13 :
+
+1. les tests ;
+2. toute l'analyse ;
+3. un contrôle que ce README, [`RESULTATS.md`](RESULTATS.md) et la page d'accueil du site affichent bien
+   les chiffres calculés par le code actuel ;
+4. les 4 notebooks.
+
+Si le contrôle n° 3 échoue, c'est que les chiffres publiés ne sont plus à jour : lancer
+`python run_pipeline.py`, puis enregistrer (commit) les fichiers modifiés.
+
+</details>
+
+<details>
 <summary><b>Organisation du dépôt</b></summary>
 
 ```
@@ -205,6 +226,7 @@ Niamey_restaurants_analysis/
 ├── README.md                  ← ce document
 ├── RESULTATS.md               ← tous les chiffres (généré automatiquement)
 ├── run_pipeline.py            ← relance toute l'analyse
+├── .github/workflows/         ← vérification automatique sur GitHub
 ├── niamey/                    ← le code de l'analyse, une étape par fichier
 │   ├── config.py              ←   tous les réglages (seuils, poids, rayons) au même endroit
 │   ├── cleaning.py            ←   étape 2-3 : nettoyage, note corrigée
@@ -214,6 +236,7 @@ Niamey_restaurants_analysis/
 │   ├── opportunity.py         ←   étapes 5-6 : score d'opportunité, simulations
 │   ├── viz.py · maps.py       ←   graphiques et carte interactive
 │   ├── report.py              ←   RESULTATS.md et bloc du README
+│   ├── homepage.py            ←   page d'accueil du site
 │   └── pipeline.py            ←   enchaîne le tout
 ├── notebooks/                 ← la même analyse, expliquée pas à pas
 │   ├── 01_cleaning.ipynb      ←   nettoyage, types, note corrigée
@@ -224,7 +247,7 @@ Niamey_restaurants_analysis/
 ├── data/
 │   ├── raw/                   ← données sources (export Google Maps, repères de quartiers)
 │   └── processed/             ← fichiers produits par l'analyse (non versionnés)
-└── docs/                      ← publié sur GitHub Pages : carte interactive + images du README
+└── docs/                      ← publié sur GitHub Pages : page d'accueil, carte, images du README
 ```
 
 </details>
@@ -266,6 +289,8 @@ Stack : `Python` · `pandas` · `NumPy` · `SciPy` · `scikit-learn` · `DuckDB`
 - **Reproductible** : une commande pour tout régénérer, des tests automatiques, un code partagé par les
   notebooks et le script ; le notebook 04 n'écrase plus le README.
 - **Carte** : filtre par type de restaurant, fiches détaillées, fonds de carte sans clé d'API.
+- **Site du projet** : une page d'accueil qui résume les résultats, avec la carte intégrée.
+- **Vérification automatique** sur GitHub à chaque modification (tests, analyse, notebooks, chiffres du README).
 
 </details>
 

@@ -4,7 +4,8 @@
 
 Produit : les tableaux (data/processed/), les graphiques (data/processed/figures/
 et docs/figures/), la carte interactive (docs/map_PORTFOLIO.html), le rapport
-RESULTATS.md et met à jour le bloc de résultats du README.
+RESULTATS.md, la page d'accueil du site (docs/index.html)
+et met à jour le bloc de résultats du README.
 """
 import matplotlib
 

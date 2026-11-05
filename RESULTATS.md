@@ -1,7 +1,7 @@
 # Résultats détaillés
 
-> Ce fichier est **généré automatiquement** par `python run_pipeline.py`
-> (dernière exécution : 05/11/2026). Ne pas le modifier à la main.
+> Ce fichier est **généré automatiquement** par `python run_pipeline.py` à partir des données de
+> `data/raw/`. Ne pas le modifier à la main : il est recalculé et vérifié automatiquement.
 > Pour l'explication de la démarche, voir le [README](README.md).
 
 ## En bref

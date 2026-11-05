@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Restaurants de Niamey</title>
+<meta name="description" content="Quel restaurant ouvrir à Niamey, et où ? Analyse de 490 fiches Google Maps.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f9f9f7; --surface: #fcfcfb; --surface-2: #f0efec; --ink: #0b0b0b; --ink-2: #52514e;
+  --muted: #898781; --line: #e1e0d9; --accent: #2a78d6; --accent-strong: #184f95; --on-accent: #ffffff;
+  --accent-soft: #e8f1fc; --warn-bg: #fdf3e1; --warn-line: #c98500;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0d0d0d; --surface: #1a1a19; --surface-2: #232321; --ink: #f0efec; --ink-2: #c3c2b7;
+    --muted: #898781; --line: #2c2c2a; --accent: #3987e5; --accent-strong: #86b6ef; --on-accent: #ffffff;
+    --accent-soft: #16263b; --warn-bg: #2a2214; --warn-line: #c98500;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 980px; margin: 0 auto; padding: 32px 16px 48px; }
+a { color: var(--accent-strong); }
+header .eyebrow { color: var(--ink-2); font-size: 14px; letter-spacing: .02em; margin: 0 0 6px; }
+h1 { font-size: clamp(28px, 5vw, 42px); line-height: 1.15; margin: 0 0 12px; }
+h2 { font-size: 22px; margin: 44px 0 12px; }
+.lead { font-size: 18px; color: var(--ink-2); margin: 0 0 20px; max-width: 70ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 28px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px;
+  text-decoration: none; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface-2); border-radius: 12px; padding: 16px 18px; }
+.kpi .value { font-size: 26px; font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.kpi .label { color: var(--ink-2); font-size: 14px; margin-top: 4px; }
+ol.findings { padding-left: 1.4em; margin: 0; }
+ol.findings li { margin: 0 0 12px; padding-left: 4px; }
+ul.leads { padding-left: 1.2em; }
+.callout {
+  background: var(--warn-bg); border-left: 4px solid var(--warn-line); border-radius: 8px;
+  padding: 12px 16px; margin: 20px 0 0; color: var(--ink);
+}
+.map-frame { width: 100%; height: min(70vh, 560px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.figure { margin: 20px 0 0; }
+.figure img { display: block; width: 100%; height: auto; border-radius: 12px; background: #fcfcfb; border: 1px solid var(--line); }
+.figure figcaption { color: var(--ink-2); font-size: 14px; margin-top: 8px; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.steps b { display: block; margin-bottom: 4px; }
+.steps span { color: var(--ink-2); font-size: 15px; }
+footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 14px; }
+code { background: var(--surface-2); padding: 1px 5px; border-radius: 5px; font-size: .92em; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Analyse de données · Niamey (Niger)</p>
+    <h1>Quel restaurant ouvrir à Niamey, et où&nbsp;?</h1>
+    <p class="lead">Analyse de 490 fiches Google Maps : types de restaurants, notes corrigées,
+      pôles de restauration et un score d'opportunité testé par 2 000 simulations.</p>
+    <nav class="actions" aria-label="Liens principaux">
+      <a class="btn primary" href="map_PORTFOLIO.html">🗺️ Ouvrir la carte interactive</a>
+      <a class="btn" href="https://github.com/blakro/Niamey_restaurants_analysis/blob/main/RESULTATS.md">📊 Résultats détaillés</a>
+      <a class="btn" href="https://github.com/blakro/Niamey_restaurants_analysis">💻 Code et méthode</a>
+    </nav>
+  </header>
+
+  <section aria-label="Chiffres clés">
+    <div class="kpis">
+<div class="kpi"><div class="value">483</div><div class="label">restaurants analysés</div></div>
+<div class="kpi"><div class="value">61 %</div><div class="label">ont moins de 5 avis Google</div></div>
+<div class="kpi"><div class="value">Boulangerie &amp; pâtisserie</div><div class="label">type de restaurant n°1</div></div>
+<div class="kpi"><div class="value">Niamey II</div><div class="label">arrondissement n°1</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce que disent les données</h2>
+    <ol class="findings">
+<li><strong>483 restaurants analysés</strong> (sur 490 fiches Google Maps, après suppression des doublons et des commerces qui ne sont pas des restaurants).</li>
+<li><strong>61 % des restaurants ont moins de 5 avis</strong> : la réputation en ligne reste très peu développée à Niamey. Seuls 127 restaurants (26 %) ont une note vraiment solide (au moins 10 avis).</li>
+<li><strong>85 des 86 restaurants notés 5★ ont 5 avis ou moins.</strong> C'est pourquoi on utilise une <em>note corrigée</em>, qui ne se laisse pas impressionner par 1 ou 2 avis.</li>
+<li><strong>Aucun type de cuisine n'est mieux noté qu'un autre</strong> de façon fiable (p = 0,35). Ce qui distingue les concepts, c'est la <strong>demande</strong> (clients par établissement) et la <strong>concurrence</strong>.</li>
+<li><strong>Concepts les plus prometteurs</strong> : <strong>Boulangerie &amp; pâtisserie</strong> (13 établissements, 17,8 avis typiques chacun, top 3 dans 97 % des simulations) ; <strong>Bar &amp; lounge</strong> (12 établissements, 12,5 avis typiques chacun, top 3 dans 95 % des simulations). À comparer avec 3,7 avis pour un restaurant généraliste.</li>
+<li><strong>Concepts saturés : Burger &amp; fast-food</strong> et <strong>Cuisine africaine &amp; locale</strong> — 58 établissements, seulement 2,3 avis chacun ; 54 établissements, seulement 2,7 avis chacun.</li>
+<li><strong>Où ?</strong> 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle <strong>Château 1 · Issa Béri</strong> (82 restaurants), chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle <strong>Dangawo · Terminus</strong> (71 restaurants), soit 2,5× moins de clients par restaurant dans ce dernier. Par arrondissement, <strong>Niamey II</strong> arrive en tête (n°1 dans 79 % des simulations).</li>
+<li><strong>Un site web va de pair avec 8× plus d'avis</strong> (médiane 15,5 contre 2,0, p &lt; 0,001), <strong>mais pas avec une meilleure note</strong> (p = 0,11) : c'est un levier de visibilité, pas de qualité.</li>
+    </ol>
+    <h2>Pistes concrètes : quel type, à quel endroit&nbsp;?</h2>
+    <ul class="leads">
+<li><strong>Boulangerie &amp; pâtisserie</strong> dans le pôle <strong>Château 1 · Issa Béri</strong> : aucun établissement de ce type parmi 82 restaurants (4 460 avis au total).</li>
+<li><strong>Bar &amp; lounge</strong> dans le pôle <strong>Château 1 · Issa Béri</strong> : 1 seul établissement de ce type parmi 82 restaurants (4 460 avis au total).</li>
+<li><strong>Bar &amp; lounge</strong> dans le pôle <strong>Dangawo · Terminus</strong> : aucun établissement de ce type parmi 71 restaurants (2 244 avis au total).</li>
+    </ul>
+    <p class="callout">⚠️ Les données proviennent d'une extraction Google Maps centrée sur les restaurants : les boulangeries, bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement sous-représentés, et leur concurrence réelle est donc sous-estimée. Avant d'investir, il faut <strong>compter la concurrence réelle sur le terrain</strong> — ces résultats indiquent des pistes, pas des certitudes.</p>
+  </section>
+
+  <section>
+    <h2>La carte</h2>
+    <p>Chaque point est un restaurant ; cliquez dessus pour voir sa fiche. Le bouton « calques », en haut à
+      droite de la carte, permet de n'afficher qu'un type de restaurant.
+      <a href="map_PORTFOLIO.html">Ouvrir la carte en plein écran</a>.</p>
+    <iframe class="map-frame" src="map_PORTFOLIO.html" title="Carte interactive des restaurants de Niamey" loading="lazy"></iframe>
+  </section>
+
+  <section>
+    <h2>En images</h2>
+    <figure class="figure">
+      <img src="figures/05_matrice_opportunite.png" loading="lazy"
+           alt="Matrice d'opportunité : chaque type de restaurant placé selon son nombre d'établissements et le nombre d'avis typique par établissement.">
+      <figcaption>En haut à gauche : beaucoup de clients par établissement et peu de concurrents. En bas à droite : marché saturé.</figcaption>
+    </figure>
+    <figure class="figure">
+      <img src="figures/09_robustesse_concepts.png" loading="lazy"
+           alt="Part des simulations où chaque type de restaurant termine dans le top 3.">
+      <figcaption>Un type de restaurant est jugé robuste s'il finit dans le top 3 dans plus de la moitié des simulations.</figcaption>
+    </figure>
+    <figure class="figure">
+      <img src="figures/00_tableau_de_bord.png" loading="lazy"
+           alt="Tableau de bord : chiffres clés, score d'opportunité par type de restaurant et par arrondissement.">
+      <figcaption>Tableau de bord de synthèse.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Comment c'est fait</h2>
+    <ol class="steps">
+<li><b>📥 Collecter</b><span>Export Google Maps : nom, type, note, nombre d&#x27;avis et adresse de chaque établissement.</span></li>
+<li><b>🧹 Nettoyer et classer</b><span>Doublons et commerces non-restaurants retirés ; type de restaurant deviné à partir du nom (« Pizza Club » → pizzeria).</span></li>
+<li><b>⭐ Corriger les notes</b><span>Chaque restaurant reçoit 10 avis « moyens » fictifs : un 5★ obtenu avec un seul avis ne fausse plus les classements.</span></li>
+<li><b>🗺️ Placer sur la carte</b><span>Plus Codes convertis en coordonnées ; un pôle = au moins 4 restaurants à moins de 500 m.</span></li>
+<li><b>🎯 Comparer</b><span>Score d&#x27;opportunité : clients par établissement (45 %), peu de concurrents (35 %), marge de progression (20 %).</span></li>
+<li><b>✅ Vérifier</b><span>2 000 simulations : un résultat est jugé robuste s&#x27;il reste dans le top 3 plus d&#x27;une fois sur deux.</span></li>
+    </ol>
+  </section>
+
+  <footer>
+    Données : fiches publiques Google Maps, Niamey (Niger) · Carte © contributeurs OpenStreetMap ·
+    Code sous licence MIT, <a href="https://github.com/blakro/Niamey_restaurants_analysis">sur GitHub</a>.<br>
+    Page générée automatiquement par <code>python run_pipeline.py</code> : ses chiffres sont les mêmes que
+    dans le README et le rapport détaillé.
+  </footer>
+</main>
+</body>
+</html>

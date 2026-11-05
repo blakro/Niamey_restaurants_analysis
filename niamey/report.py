@@ -6,7 +6,6 @@
 """
 from __future__ import annotations
 
-import datetime as dt
 import re
 
 import pandas as pd
@@ -104,8 +103,10 @@ CAVEAT = (
 
 
 def readme_block(r) -> str:
-    today = dt.date.today().strftime("%d/%m/%Y")
-    parts = [START, "", f"*Chiffres calculés automatiquement le {today}.*", ""]
+    # Pas de date : le bloc ne change que si les données ou le code changent
+    # (la vérification automatique sur GitHub compare ce bloc au résultat attendu).
+    parts = [START, "", "*Chiffres calculés automatiquement par `python run_pipeline.py` — "
+             "ne pas modifier ce bloc à la main.*", ""]
     parts += [f"{i}. {t}" for i, t in enumerate(findings(r), 1)]
     if len(r.leads):
         parts += ["", "**Pistes concrètes (type × lieu)** — un concept prometteur là où il est absent :", ""]
@@ -196,8 +197,8 @@ def write_results_md(r, path=config.RESULTS_MD) -> None:
 
     md = f"""# Résultats détaillés
 
-> Ce fichier est **généré automatiquement** par `python run_pipeline.py`
-> (dernière exécution : {dt.date.today().strftime("%d/%m/%Y")}). Ne pas le modifier à la main.
+> Ce fichier est **généré automatiquement** par `python run_pipeline.py` à partir des données de
+> `data/raw/`. Ne pas le modifier à la main : il est recalculé et vérifié automatiquement.
 > Pour l'explication de la démarche, voir le [README](README.md).
 
 ## En bref

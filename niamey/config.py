@@ -17,8 +17,12 @@ MAP_DIR = PROC_DIR / "maps"             # toutes les cartes (non versionnées)
 DOCS_DIR = ROOT / "docs"                # publié via GitHub Pages (versionné)
 DOCS_FIG_DIR = DOCS_DIR / "figures"     # figures affichées dans le README
 PORTFOLIO_MAP = DOCS_DIR / "map_PORTFOLIO.html"
+INDEX_HTML = DOCS_DIR / "index.html"    # page d'accueil du site GitHub Pages
 RESULTS_MD = ROOT / "RESULTATS.md"      # rapport chiffré, régénéré à chaque exécution
 README = ROOT / "README.md"
+
+REPO_URL = "https://github.com/blakro/Niamey_restaurants_analysis"
+SITE_URL = "https://blakro.github.io/Niamey_restaurants_analysis/"
 
 CLEAN_CSV = PROC_DIR / "restaurants_clean.csv"
 GEO_CSV = PROC_DIR / "restaurants_geo.csv"

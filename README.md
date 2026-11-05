@@ -6,6 +6,7 @@ Ce projet part d'une question simple que se pose tout futur restaurateur :
 Pour y répondre, on a analysé **les fiches Google Maps de près de 500 établissements** de la ville :
 leur type, leur note, leur nombre d'avis et leur position sur la carte.
 
+👉 **[Voir le site du projet](https://blakro.github.io/Niamey_restaurants_analysis/)** : l'essentiel en une page, avec la carte
 👉 **[Ouvrir la carte interactive](https://blakro.github.io/Niamey_restaurants_analysis/map_PORTFOLIO.html)** : tous les restaurants, filtrables par type, avec leur fiche
 👉 **[Lire les résultats détaillés](RESULTATS.md)** : tous les chiffres et tableaux
 
@@ -17,7 +18,7 @@ leur type, leur note, leur nombre d'avis et leur position sur la carte.
 
 <!-- RESULTATS:DEBUT -->
 
-*Chiffres calculés automatiquement le 05/11/2026.*
+*Chiffres calculés automatiquement par `python run_pipeline.py` — ne pas modifier ce bloc à la main.*
 
 1. **483 restaurants analysés** (sur 490 fiches Google Maps, après suppression des doublons et des commerces qui ne sont pas des restaurants).
 2. **61 % des restaurants ont moins de 5 avis** : la réputation en ligne reste très peu développée à Niamey. Seuls 127 restaurants (26 %) ont une note vraiment solide (au moins 10 avis).
@@ -177,7 +178,8 @@ pip install -r requirements.txt
 ```
 
 Relancer **toute** l'analyse en une commande (environ 15 secondes). Elle régénère les tableaux, les
-graphiques, la carte, [`RESULTATS.md`](RESULTATS.md) et le bloc « Ce que disent les données » de ce README :
+graphiques, la carte, [`RESULTATS.md`](RESULTATS.md), la page d'accueil du site et le bloc « Ce que disent
+les données » de ce README :
 
 ```bash
 python run_pipeline.py
@@ -198,6 +200,25 @@ jupyter lab
 </details>
 
 <details>
+<summary><b>Vérification automatique</b></summary>
+
+[![Vérification](https://github.com/blakro/Niamey_restaurants_analysis/actions/workflows/verification.yml/badge.svg)](https://github.com/blakro/Niamey_restaurants_analysis/actions/workflows/verification.yml)
+
+À chaque modification envoyée sur GitHub, l'onglet **Actions** relance automatiquement, avec Python 3.11
+et 3.13 :
+
+1. les tests ;
+2. toute l'analyse ;
+3. un contrôle que ce README, [`RESULTATS.md`](RESULTATS.md) et la page d'accueil du site affichent bien
+   les chiffres calculés par le code actuel ;
+4. les 4 notebooks.
+
+Si le contrôle n° 3 échoue, c'est que les chiffres publiés ne sont plus à jour : lancer
+`python run_pipeline.py`, puis enregistrer (commit) les fichiers modifiés.
+
+</details>
+
+<details>
 <summary><b>Organisation du dépôt</b></summary>
 
 ```
@@ -205,6 +226,7 @@ Niamey_restaurants_analysis/
 ├── README.md                  ← ce document
 ├── RESULTATS.md               ← tous les chiffres (généré automatiquement)
 ├── run_pipeline.py            ← relance toute l'analyse
+├── .github/workflows/         ← vérification automatique sur GitHub
 ├── niamey/                    ← le code de l'analyse, une étape par fichier
 │   ├── config.py              ←   tous les réglages (seuils, poids, rayons) au même endroit
 │   ├── cleaning.py            ←   étape 2-3 : nettoyage, note corrigée
@@ -214,6 +236,7 @@ Niamey_restaurants_analysis/
 │   ├── opportunity.py         ←   étapes 5-6 : score d'opportunité, simulations
 │   ├── viz.py · maps.py       ←   graphiques et carte interactive
 │   ├── report.py              ←   RESULTATS.md et bloc du README
+│   ├── homepage.py            ←   page d'accueil du site
 │   └── pipeline.py            ←   enchaîne le tout
 ├── notebooks/                 ← la même analyse, expliquée pas à pas
 │   ├── 01_cleaning.ipynb      ←   nettoyage, types, note corrigée
@@ -224,7 +247,7 @@ Niamey_restaurants_analysis/
 ├── data/
 │   ├── raw/                   ← données sources (export Google Maps, repères de quartiers)
 │   └── processed/             ← fichiers produits par l'analyse (non versionnés)
-└── docs/                      ← publié sur GitHub Pages : carte interactive + images du README
+└── docs/                      ← publié sur GitHub Pages : page d'accueil, carte, images du README
 ```
 
 </details>
@@ -266,6 +289,8 @@ Stack : `Python` · `pandas` · `NumPy` · `SciPy` · `scikit-learn` · `DuckDB`
 - **Reproductible** : une commande pour tout régénérer, des tests automatiques, un code partagé par les
   notebooks et le script ; le notebook 04 n'écrase plus le README.
 - **Carte** : filtre par type de restaurant, fiches détaillées, fonds de carte sans clé d'API.
+- **Site du projet** : une page d'accueil qui résume les résultats, avec la carte intégrée.
+- **Vérification automatique** sur GitHub à chaque modification (tests, analyse, notebooks, chiffres du README).
 
 </details>
 

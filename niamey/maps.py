@@ -95,11 +95,14 @@ def _legend(zones: pd.DataFrame) -> str:
         f"<span style='color:#52514e'>{int(r.nb_etablissements)} · {_fmt(r.avis_typique)} avis/resto</span></div>"
         for z, r in zones.sort_values("nb_etablissements", ascending=False).iterrows()
     )
+    # Légende repliable : ouverte sur grand écran, repliée sur téléphone (où elle
+    # masquait la moitié de la carte).
     return f"""
-    <div style="position:fixed;bottom:56px;left:12px;z-index:1000;max-width:300px;
+    <details id="legende-carte" open style="position:fixed;bottom:56px;left:12px;z-index:1000;max-width:300px;
          background:rgba(252,252,251,.97);padding:10px 14px;border-radius:10px;
          box-shadow:0 2px 10px rgba(0,0,0,.18);font-family:system-ui,sans-serif;font-size:12px;color:#0b0b0b">
-      <b>Note corrigée</b> (taille du point = nombre d'avis)
+      <summary style="cursor:pointer;font-weight:700">Légende</summary>
+      <div style="margin-top:4px"><b>Note corrigée</b> (taille du point = nombre d'avis)</div>
       {rows}
       <div><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#52514e;
            vertical-align:-2px"></span> groupe de restaurants (zoomer pour les voir)</div>
@@ -108,7 +111,10 @@ def _legend(zones: pd.DataFrame) -> str:
       </details>
       <div style="color:#52514e;margin-top:6px;font-size:11px">
         Bouton « calques » en haut à droite : filtrer par type de restaurant.</div>
-    </div>"""
+    </details>
+    <script>
+      if (window.innerWidth < 600) document.getElementById("legende-carte").removeAttribute("open");
+    </script>"""
 
 
 def build_map(g: pd.DataFrame, zones: pd.DataFrame, path=config.PORTFOLIO_MAP) -> folium.Map:

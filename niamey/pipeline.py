@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from . import cleaning, config, geo, maps, opportunity, report, stats, viz
+from . import cleaning, config, geo, homepage, maps, opportunity, report, stats, viz
 
 
 @dataclass
@@ -115,6 +115,7 @@ def run_all(verbose: bool = True) -> Results:
     maps.build_map(r.geo, all_poles(r.geo))
     report.write_results_md(r)
     report.update_readme(r)
+    homepage.write(r)
     if verbose:
         print(r.log.to_frame().to_string(index=False))
         print()

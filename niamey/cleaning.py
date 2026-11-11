@@ -1,4 +1,4 @@
-"""Étape 1 — Nettoyage et enrichissement des fiches Google Maps."""
+"""Étapes 2 et 3 du README — Nettoyage et enrichissement des fiches Google Maps."""
 from __future__ import annotations
 
 import re

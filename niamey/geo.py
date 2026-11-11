@@ -1,4 +1,4 @@
-"""Étape 3 — Positionner les restaurants sur la carte et repérer les pôles."""
+"""Étape 4 du README — Positionner les restaurants sur la carte et repérer les pôles."""
 from __future__ import annotations
 
 import numpy as np

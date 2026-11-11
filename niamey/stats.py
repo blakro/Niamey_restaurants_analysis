@@ -1,4 +1,4 @@
-"""Étape 2 — Constats chiffrés et tests statistiques (calculés, jamais écrits à la main)."""
+"""Constats chiffrés et tests statistiques (calculés, jamais écrits à la main)."""
 from __future__ import annotations
 
 import pandas as pd

@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import html
+import itertools
+from contextlib import contextmanager
+from unittest import mock
 
 import folium
 import pandas as pd
@@ -36,6 +39,21 @@ function(cluster) {
   });
 }
 """
+
+
+@contextmanager
+def _stable_ids():
+    """Folium donne à chaque élément un identifiant tiré au hasard : la carte
+    changeait donc entièrement à chaque exécution, même sans aucune modification
+    des données. On numérote ici les éléments dans l'ordre de création."""
+    counter = itertools.count(1)
+
+    def next_id() -> str:
+        return f"{next(counter):032x}"
+
+    with mock.patch("branca.element.Element._generate_id", staticmethod(next_id)), \
+         mock.patch("folium.utilities.uuid.uuid4", lambda: mock.Mock(hex=next_id())):
+        yield
 
 
 def score_color(score) -> str:
@@ -92,13 +110,13 @@ def _legend(zones: pd.DataFrame) -> str:
     ) + f"<div><span style='color:{NO_SCORE[0]};font-size:15px'>●</span> {NO_SCORE[1]}</div>"
     zone_rows = "".join(
         f"<div style='display:flex;justify-content:space-between;gap:8px'><span>{html.escape(z)}</span>"
-        f"<span style='color:#52514e'>{int(r.nb_etablissements)} · {_fmt(r.avis_typique)} avis/resto</span></div>"
+        f"<span style='color:#52514e'>{int(r.nb_etablissements)} · {_fmt(r.avis_typique)} avis typiques par restaurant</span></div>"
         for z, r in zones.sort_values("nb_etablissements", ascending=False).iterrows()
     )
     # Légende repliable : ouverte sur grand écran, repliée sur téléphone (où elle
     # masquait la moitié de la carte).
     return f"""
-    <details id="legende-carte" open style="position:fixed;bottom:56px;left:12px;z-index:1000;max-width:300px;
+    <details id="legende-carte" open style="position:fixed;bottom:56px;left:12px;z-index:1000;max-width:320px;
          background:rgba(252,252,251,.97);padding:10px 14px;border-radius:10px;
          box-shadow:0 2px 10px rgba(0,0,0,.18);font-family:system-ui,sans-serif;font-size:12px;color:#0b0b0b">
       <summary style="cursor:pointer;font-weight:700">Légende</summary>
@@ -118,6 +136,11 @@ def _legend(zones: pd.DataFrame) -> str:
 
 
 def build_map(g: pd.DataFrame, zones: pd.DataFrame, path=config.PORTFOLIO_MAP) -> folium.Map:
+    with _stable_ids():
+        return _build_map(g, zones, path)
+
+
+def _build_map(g: pd.DataFrame, zones: pd.DataFrame, path) -> folium.Map:
     geo = g[g["is_geocoded"]]
     m = folium.Map(location=[config.NIAMEY_LAT, config.NIAMEY_LNG], zoom_start=13, tiles=None,
                    control_scale=True)

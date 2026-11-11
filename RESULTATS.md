@@ -9,11 +9,11 @@
 1. **483 restaurants analysés** (sur 490 fiches Google Maps, après suppression des doublons et des commerces qui ne sont pas des restaurants).
 2. **61 % des restaurants ont moins de 5 avis** : la réputation en ligne reste très peu développée à Niamey. Seuls 127 restaurants (26 %) ont une note vraiment solide (au moins 10 avis).
 3. **85 des 86 restaurants notés 5★ ont 5 avis ou moins.** C'est pourquoi on utilise une *note corrigée*, qui ne se laisse pas impressionner par 1 ou 2 avis.
-4. **Aucun type de cuisine n'est mieux noté qu'un autre** de façon fiable (p = 0,35). Ce qui distingue les concepts, c'est la **demande** (clients par établissement) et la **concurrence**.
-5. **Concepts les plus prometteurs** : **Boulangerie & pâtisserie** (13 établissements, 17,8 avis typiques chacun, top 3 dans 97 % des simulations) ; **Bar & lounge** (12 établissements, 12,5 avis typiques chacun, top 3 dans 95 % des simulations). À comparer avec 3,7 avis pour un restaurant généraliste.
-6. **Concepts saturés : Burger & fast-food** et **Cuisine africaine & locale** — 58 établissements, seulement 2,3 avis chacun ; 54 établissements, seulement 2,7 avis chacun.
+4. **Aucun type de restaurant n'est mieux noté qu'un autre** : les écarts de notes sont trop faibles pour être distingués du hasard (p = 0,35). Ce qui distingue les types de restaurant, c'est la **demande** (clients par établissement) et la **concurrence**.
+5. **Types de restaurant les plus prometteurs** : **Boulangerie & pâtisserie** (13 établissements, 17,8 avis typiques chacun, dans le top 3 de 97 % des simulations) ; **Bar & lounge** (12 établissements, 12,5 avis typiques chacun, dans le top 3 de 95 % des simulations). À comparer avec 3,7 avis typiques pour un restaurant généraliste.
+6. **Types de restaurant saturés** : **Burger & fast-food** (58 établissements, seulement 2,3 avis typiques chacun) et **Cuisine africaine & locale** (54 établissements, seulement 2,7 avis typiques chacun).
 7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri** (82 restaurants), chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus** (71 restaurants), soit 2,5× moins de clients par restaurant dans ce dernier. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
-8. **Un site web va de pair avec 8× plus d'avis** (médiane 15,5 contre 2,0, p < 0,001), **mais pas avec une meilleure note** (p = 0,11) : c'est un levier de visibilité, pas de qualité.
+8. **Un site web va de pair avec environ 8× plus d'avis** (médiane : 15,5 avis avec un site, 2,0 sans ; écart net, p < 0,001), **mais pas avec une meilleure note** (écart non concluant, p = 0,11) : c'est un levier de visibilité, pas de qualité.
 
 > ⚠️ Les données proviennent d'une extraction Google Maps centrée sur les restaurants : les boulangeries, bars ou cafés qui ne sont pas référencés comme restaurants y sont probablement sous-représentés, et leur concurrence réelle est donc sous-estimée. Avant d'investir, il faut **compter la concurrence réelle sur le terrain** — ces résultats indiquent des pistes, pas des certitudes.
 
@@ -48,8 +48,8 @@
 | Restaurants sans aucun avis | 116 |
 | Restaurants avec moins de 5 avis | 61 % |
 | Restaurants notés 5★ dont la note repose sur 5 avis ou moins | 85 sur 86 |
-| Lien entre nombre d'avis et note (Spearman) | ρ = -0,30 (p < 0,001) : plus un restaurant a d'avis, plus sa note est « réaliste » |
-| Les notes diffèrent-elles selon le type de cuisine ? (Kruskal-Wallis, 10 types) | Non : p = 0,35 |
+| Lien entre nombre d'avis et note | Plus un restaurant a d'avis, moins sa note est « parfaite » (corrélation de Spearman ρ = -0,30, p < 0,001) |
+| Les notes diffèrent-elles selon le type de restaurant ? (10 types comparés) | Non (test de Kruskal-Wallis, p = 0,35) |
 | Avis (médiane) avec / sans site web | 15,5 / 2,0 (p < 0,001) |
 | Note (médiane, ≥ 10 avis) avec / sans site web | 4,1 / 3,9 (p = 0,11) |
 
@@ -57,6 +57,9 @@
 (4,10★) avant ses vrais avis. Exemple : 5★ sur 1 avis devient
 4,18★, alors que 4,9★ sur
 443 avis reste à 4,88★.
+
+*Comment lire « p » ?* C'est la probabilité d'observer un écart au moins aussi grand par pur hasard.
+En dessous de 0,05, on considère que l'écart est réel ; au-dessus, on ne peut rien conclure.
 
 ![Notes corrigées](docs/figures/02_notes_corrigees.png)
 
@@ -91,7 +94,7 @@ Score = 45 % **demande** + 35 % **concurrence**
 5 établissements sont classés ; « Restaurant généraliste », « Hôtel-restaurant »
 et « Cantine & traiteur » servent de référence.
 
-| Rang | Groupe | Établissements | Avis typiques / établissement | Note corrigée moyenne | Demande (0-1) | Concurrence (0-1) | Marge (0-1) | **Score** | Top 3 (simulations) | Confiance |
+| Rang | Type de restaurant | Établissements | Avis typiques / établissement | Note corrigée moyenne | Demande (0-1) | Concurrence (0-1) | Marge (0-1) | **Score** | Top 3 (simulations) | Confiance |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | **Boulangerie & pâtisserie** | 13 | 17,8 | 4,10 | 1,00 | 0,85 | 0,40 | **0,83** | 97 % | Bonne |
 | 2 | **Bar & lounge** | 12 | 12,5 | 4,16 | 0,81 | 0,90 | 0,34 | **0,75** | 95 % | Moyenne |
@@ -103,8 +106,10 @@ et « Cantine & traiteur » servent de référence.
 | 8 | **Cuisine africaine & locale** | 54 | 2,7 | 4,02 | 0,07 | 0,04 | 0,48 | **0,14** | 0 % | Bonne |
 | 9 | **Burger & fast-food** | 58 | 2,3 | 4,06 | 0,00 | 0,00 | 0,44 | **0,09** | 0 % | Bonne |
 
+*Demande*, *Concurrence* et *Marge* : les trois critères, notés de 0 (défavorable) à 1 (favorable) ; par
+exemple, « Concurrence = 1 » désigne le type qui compte le moins d'établissements.
 *Top 3 (simulations)* : part des 2 000 simulations (échantillon de restaurants et poids des
-critères tirés au hasard) où le type finit dans les 3 premiers. **Au-dessus de 50 %, le résultat est robuste.**
+critères tirés au hasard) où le type finit dans les 3 premiers. **Au-dessus de 50 %, le résultat est solide.**
 *Confiance* : Bonne = au moins 8 établissements avec une note solide, Moyenne = 4 à 7, Faible = moins de 4.
 
 ![Matrice d'opportunité](docs/figures/05_matrice_opportunite.png)
@@ -119,7 +124,7 @@ proche (référentiel approximatif : `data/raw/niamey_quartiers_reference.csv`).
 
 ### Par arrondissement
 
-| Rang | Groupe | Établissements | Avis typiques / établissement | Note corrigée moyenne | Demande (0-1) | Concurrence (0-1) | Marge (0-1) | **Score** | N°1 (simulations) | Confiance |
+| Rang | Arrondissement | Établissements | Avis typiques / établissement | Note corrigée moyenne | Demande (0-1) | Concurrence (0-1) | Marge (0-1) | **Score** | N°1 (simulations) | Confiance |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | **Niamey II** | 25 | 6,8 | 4,01 | 1,00 | 1,00 | 0,49 | **0,90** | 79 % | Bonne |
 | 2 | **Niamey V** | 28 | 4,6 | 4,06 | 0,54 | 0,94 | 0,44 | **0,66** | 20 % | Bonne |
@@ -127,17 +132,24 @@ proche (référentiel approximatif : `data/raw/niamey_quartiers_reference.csv`).
 | 4 | **Niamey I** | 162 | 4,0 | 4,05 | 0,39 | 0,00 | 0,45 | **0,26** | 0 % | Bonne |
 | 5 | **Niamey III** | 77 | 2,8 | 4,08 | 0,00 | 0,40 | 0,42 | **0,22** | 0 % | Bonne |
 
+*N°1 (simulations)* : part des 2 000 simulations où l'arrondissement finit premier
+(avec seulement 5 arrondissements, un « top 3 » ne voudrait rien dire).
+
 ![Arrondissements](docs/figures/10_zones_arrondissements.png)
 
 ### Par pôle de restauration
 
 Un **pôle** est un groupe d'au moins 4 restaurants situés à moins de
-500 m les uns des autres (algorithme DBSCAN). On en trouve 13, qui regroupent
+500 m les uns des autres. On en trouve 13, qui regroupent
 229 restaurants ; les 11 pôles d'au moins 5 restaurants sont classés
-ci-dessous. Attention : la plupart sont petits (confiance *faible*), seul le contraste entre les deux grands
-pôles est vraiment solide.
+ci-dessous.
 
-| Rang | Groupe | Établissements | Avis typiques / établissement | Note corrigée moyenne | Demande (0-1) | Concurrence (0-1) | Marge (0-1) | **Score** | Top 3 (simulations) | Confiance |
+> **À lire avec prudence.** Les petits pôles arrivent en tête surtout parce qu'ils comptent peu de
+> concurrents, mais leur confiance est *faible* : leur rang change beaucoup d'une simulation à l'autre.
+> Le seul résultat vraiment solide est le contraste entre les deux grands pôles : à taille comparable,
+> l'un attire nettement plus de clients par restaurant que l'autre.
+
+| Rang | Pôle | Établissements | Avis typiques / établissement | Note corrigée moyenne | Demande (0-1) | Concurrence (0-1) | Marge (0-1) | **Score** | Top 3 (simulations) | Confiance |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | **Périphérie (vers Koira Tégui Nord)** | 5 | 3,8 | 4,12 | 0,62 | 1,00 | 0,38 | **0,70** | 59 % | Faible |
 | 2 | **Kombo** | 5 | 3,5 | 4,05 | 0,56 | 1,00 | 0,45 | **0,69** | 57 % | Faible |
@@ -155,7 +167,9 @@ pôles est vraiment solide.
 
 ## 5. Pistes concrètes : quel type, à quel endroit ?
 
-Pour les types les plus prometteurs, les pôles où ils sont absents (ou presque) :
+Pour les types de restaurant les plus prometteurs, les pôles où ils sont absents (ou presque).
+Le *score de la piste* (0 à 1) combine le score du type (40 %), le score du pôle (30 %) et la
+fréquentation totale du pôle (30 %) : un type absent d'un pôle très fréquenté vaut plus qu'absent d'un pôle désert.
 
 | Type | Pôle | Concurrents du même type dans le pôle | Restaurants dans le pôle | Avis dans le pôle | Score de la piste |
 |---|---|---|---|---|---|

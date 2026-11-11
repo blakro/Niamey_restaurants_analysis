@@ -1,4 +1,4 @@
-"""Étape 4 — Modèle d'opportunité : quel type de restaurant, et où ?
+"""Étapes 5 et 6 du README — Modèle d'opportunité : quel type de restaurant, et où ?
 
 Pour chaque groupe (un concept comme « Pizzeria », ou une zone de la ville),
 on répond à trois questions simples, notées de 0 (défavorable) à 1 (favorable) :

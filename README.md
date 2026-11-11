@@ -20,16 +20,18 @@ leur type, leur note, leur nombre d'avis et leur position sur la carte.
 
 *Chiffres calculés automatiquement par `python run_pipeline.py` — ne pas modifier ce bloc à la main.*
 
+Un mot vous échappe (« avis typiques », « simulations », « p »…) ? Voir le [petit glossaire](#-petit-glossaire).
+
 1. **483 restaurants analysés** (sur 490 fiches Google Maps, après suppression des doublons et des commerces qui ne sont pas des restaurants).
 2. **61 % des restaurants ont moins de 5 avis** : la réputation en ligne reste très peu développée à Niamey. Seuls 127 restaurants (26 %) ont une note vraiment solide (au moins 10 avis).
 3. **85 des 86 restaurants notés 5★ ont 5 avis ou moins.** C'est pourquoi on utilise une *note corrigée*, qui ne se laisse pas impressionner par 1 ou 2 avis.
-4. **Aucun type de cuisine n'est mieux noté qu'un autre** de façon fiable (p = 0,35). Ce qui distingue les concepts, c'est la **demande** (clients par établissement) et la **concurrence**.
-5. **Concepts les plus prometteurs** : **Boulangerie & pâtisserie** (13 établissements, 17,8 avis typiques chacun, top 3 dans 97 % des simulations) ; **Bar & lounge** (12 établissements, 12,5 avis typiques chacun, top 3 dans 95 % des simulations). À comparer avec 3,7 avis pour un restaurant généraliste.
-6. **Concepts saturés : Burger & fast-food** et **Cuisine africaine & locale** — 58 établissements, seulement 2,3 avis chacun ; 54 établissements, seulement 2,7 avis chacun.
+4. **Aucun type de restaurant n'est mieux noté qu'un autre** : les écarts de notes sont trop faibles pour être distingués du hasard (p = 0,35). Ce qui distingue les types de restaurant, c'est la **demande** (clients par établissement) et la **concurrence**.
+5. **Types de restaurant les plus prometteurs** : **Boulangerie & pâtisserie** (13 établissements, 17,8 avis typiques chacun, dans le top 3 de 97 % des simulations) ; **Bar & lounge** (12 établissements, 12,5 avis typiques chacun, dans le top 3 de 95 % des simulations). À comparer avec 3,7 avis typiques pour un restaurant généraliste.
+6. **Types de restaurant saturés** : **Burger & fast-food** (58 établissements, seulement 2,3 avis typiques chacun) et **Cuisine africaine & locale** (54 établissements, seulement 2,7 avis typiques chacun).
 7. **Où ?** 47 % des restaurants localisés sont concentrés dans 2 pôles. Dans le pôle **Château 1 · Issa Béri** (82 restaurants), chaque restaurant attire 6,7 avis typiques, contre 2,6 dans le pôle **Dangawo · Terminus** (71 restaurants), soit 2,5× moins de clients par restaurant dans ce dernier. Par arrondissement, **Niamey II** arrive en tête (n°1 dans 79 % des simulations).
-8. **Un site web va de pair avec 8× plus d'avis** (médiane 15,5 contre 2,0, p < 0,001), **mais pas avec une meilleure note** (p = 0,11) : c'est un levier de visibilité, pas de qualité.
+8. **Un site web va de pair avec environ 8× plus d'avis** (médiane : 15,5 avis avec un site, 2,0 sans ; écart net, p < 0,001), **mais pas avec une meilleure note** (écart non concluant, p = 0,11) : c'est un levier de visibilité, pas de qualité.
 
-**Pistes concrètes (type × lieu)** — un concept prometteur là où il est absent :
+**Pistes concrètes (type × lieu)** — un type de restaurant prometteur, dans un pôle où il est absent ou presque :
 
 - **Boulangerie & pâtisserie** dans le pôle **Château 1 · Issa Béri** : aucun établissement de ce type parmi 82 restaurants (4 460 avis au total).
 - **Bar & lounge** dans le pôle **Château 1 · Issa Béri** : 1 seul établissement de ce type parmi 82 restaurants (4 460 avis au total).
@@ -111,7 +113,7 @@ L'idée est simple : **beaucoup de clients + peu de concurrents = une place à p
 Certains groupes ne comptent qu'une dizaine d'établissements : le classement pourrait être dû au hasard.
 On **rejoue donc le calcul 2 000 fois**, en changeant à chaque fois un peu les données et l'importance
 des trois questions. Si un type de restaurant reste dans le **top 3 dans plus de la moitié des cas**,
-on peut s'y fier.
+on peut s'y fier ; sinon, son classement est fragile.
 
 ---
 
@@ -122,7 +124,8 @@ et peu de concurrents. En bas à droite : marché saturé.
 
 ![Matrice d'opportunité](docs/figures/05_matrice_opportunite.png)
 
-**Le classement résiste-t-il au hasard ?**
+**Le classement résiste-t-il au hasard ?** En bleu, les types de restaurant qui restent dans le top 3 dans
+plus de la moitié des simulations.
 
 ![Robustesse du classement](docs/figures/09_robustesse_concepts.png)
 
@@ -157,11 +160,13 @@ concurrents, observer la fréquentation, parler aux habitants), pas des certitud
 |---|---|
 | **Note corrigée** | Note Google ajustée selon le nombre d'avis (voir étape 3). |
 | **Avis typiques** | Nombre d'avis d'un établissement « ordinaire » d'un groupe. On n'utilise pas la moyenne classique, qui serait faussée par un ou deux restaurants très célèbres. |
+| **Médiane** | La valeur « du milieu » : la moitié des restaurants est au-dessus, l'autre moitié en dessous. |
+| **Simulations** | Le classement refait 2 000 fois avec des données et des critères légèrement modifiés (voir étape 6). Un résultat qui revient plus d'une fois sur deux est jugé solide. |
 | **Pôle de restauration** | Groupe d'au moins 4 restaurants à moins de 500 m les uns des autres. |
 | **Plus Code** | Adresse GPS courte inventée par Google (ex. `G476+RX4`). |
 | **Score d'opportunité** | Note de 0 à 1 combinant clients, concurrence et marge de progression. |
-| **p (p-value)** | Probabilité d'observer une différence au moins aussi grande s'il n'y en avait en réalité aucune. En dessous de 0,05, on considère que la différence est réelle et pas un effet du hasard. |
-| **Confiance** | *Bonne* si le groupe compte au moins 8 établissements avec 10 avis ou plus ; *Faible* en dessous de 4. |
+| **p (p-value)** | Probabilité d'observer une différence au moins aussi grande s'il n'y en avait en réalité aucune. En dessous de 0,05, on considère que la différence est réelle et pas un effet du hasard ; au-dessus, on ne peut rien conclure. |
+| **Confiance** | *Bonne* si le groupe compte au moins 8 établissements avec 10 avis ou plus ; *Moyenne* de 4 à 7 ; *Faible* en dessous de 4. |
 
 ---
 
@@ -279,7 +284,7 @@ Stack : `Python` · `pandas` · `NumPy` · `SciPy` · `scikit-learn` · `DuckDB`
 - **Bug corrigé dans l'analyse par zone** : les noms de zones étaient associés aux mauvais groupes de
   restaurants (confusion entre deux numérotations).
 - **Types de restaurants mieux identifiés** : on lit le nom en plus de l'étiquette Google (la part de
-  « Restaurant » sans précision passe de 68 % à 43 %). Les catégories artificielles « Autre » et
+  « Restaurant » sans précision passe de 65 % à 43 %). Les catégories artificielles « Autre » et
   « Restaurant halal » ne sont plus présentées comme des opportunités.
 - **Note corrigée plus juste** : a priori de 10 avis au lieu de la moyenne (≈ 39, tirée vers le haut par
   quelques adresses célèbres), qui écrasait toutes les notes autour de 4,1.
@@ -288,7 +293,8 @@ Stack : `Python` · `pandas` · `NumPy` · `SciPy` · `scikit-learn` · `DuckDB`
 - **Données nettoyées** : ligne décalée réparée, doublons et commerces hors restauration retirés.
 - **Reproductible** : une commande pour tout régénérer, des tests automatiques, un code partagé par les
   notebooks et le script ; le notebook 04 n'écrase plus le README.
-- **Carte** : filtre par type de restaurant, fiches détaillées, fonds de carte sans clé d'API.
+- **Carte** : filtre par type de restaurant, fiches détaillées, fonds de carte sans clé d'API ; le fichier ne
+  change plus d'une exécution à l'autre tant que les données sont les mêmes.
 - **Site du projet** : une page d'accueil qui résume les résultats, avec la carte intégrée.
 - **Vérification automatique** sur GitHub à chaque modification (tests, analyse, notebooks, chiffres du README).
 

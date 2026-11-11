@@ -6,6 +6,7 @@ sur les éléments importants, jamais de double axe.
 """
 from __future__ import annotations
 
+import textwrap
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -15,7 +16,7 @@ from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator
 
 from . import config
 
-# Palette de référence (validée daltonisme) — voir README « Méthode ».
+# Palette de référence (validée daltonisme).
 SURFACE = "#fcfcfb"
 INK = "#0b0b0b"
 INK_2 = "#52514e"
@@ -121,7 +122,7 @@ def fig_bayes(df: pd.DataFrame, publish: bool = False):
     ax.xaxis.set_minor_locator(NullLocator())
     _fr_axis(ax, "x")
     _fr_axis(ax, "y")
-    ax.set_xlabel("Nombre d'avis (échelle logarithmique)")
+    ax.set_xlabel("Nombre d'avis du restaurant")
     ax.set_ylabel("Note sur 5")
     ax.set_ylim(0.8, 5.2)
     ax.set_title("Une note de 5★ sur 1 avis ne vaut pas une note de 4,8★ sur 400 avis", pad=24)
@@ -190,25 +191,26 @@ def fig_matrix(scores: pd.DataFrame, robust: pd.DataFrame, publish: bool = False
         axis.set_major_formatter(FuncFormatter(lambda v, _: _fr(v)))
     ax.set_xlim(x.min() / 1.25, x.max() * 1.3)
     ax.set_ylim(y.min() / 1.3, y.max() * 1.25)
-    ax.set_xlabel("Concurrence : nombre d'établissements (échelle log)")
-    ax.set_ylabel("Demande : avis typiques par établissement (échelle log)")
-    texts = []
+    ax.set_xlabel("Concurrence : nombre d'établissements de ce type  →  plus de concurrents")
+    ax.set_ylabel("Demande : avis typiques par établissement  →  plus de clients")
+    # Étiquette collée à son rond : à droite, ou à gauche pour les ronds proches
+    # du bord droit (sinon le nom sortirait du cadre ou recouvrirait un voisin).
+    x_split = np.exp(np.log(x.min()) + 0.72 * (np.log(x.max()) - np.log(x.min())))
     for name, row in s.iterrows():
-        texts.append(ax.text(row["nb_etablissements"], row["avis_typique"], f"  {name}",
-                             fontsize=9.5, color=INK if highlight[name] else INK_2,
-                             fontweight="bold" if highlight[name] else "normal", va="center", zorder=5))
-    try:
-        from adjustText import adjust_text
-        adjust_text(texts, ax=ax, iter_lim=ADJUST_ITER, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6))
-    except ImportError:
-        pass
+        gap = np.sqrt(size[name]) / 2 + 4          # rayon du rond, en points
+        left = row["nb_etablissements"] > x_split
+        ax.annotate(name, (row["nb_etablissements"], row["avis_typique"]),
+                    xytext=(-gap if left else gap, 0), textcoords="offset points",
+                    ha="right" if left else "left", va="center", fontsize=9.5,
+                    color=INK if highlight[name] else INK_2,
+                    fontweight="bold" if highlight[name] else "normal", zorder=5)
     ax.text(0.01, 0.99, "↖ OPPORTUNITÉ : peu de concurrents, beaucoup de clients",
             transform=ax.transAxes, fontsize=9, color=BLUE_DARK, va="top", fontweight="bold")
     ax.text(0.99, 0.01, "SATURÉ : beaucoup de concurrents, peu de clients chacun ↘",
             transform=ax.transAxes, fontsize=9, color=INK_2, va="bottom", ha="right", fontweight="bold")
     ax.set_title("Où est la place pour un nouveau restaurant ?", pad=24)
-    _subtitle(ax, "En bleu : concepts dans le top 3 dans plus de la moitié des simulations · "
-                  "taille = nombre total d'avis")
+    _subtitle(ax, "En bleu : types de restaurant dans le top 3 dans plus de la moitié des simulations · "
+                  "taille du rond = nombre total d'avis")
     return fig, save(fig, "05_matrice_opportunite", publish)
 
 
@@ -218,24 +220,24 @@ def fig_robustness(robust: pd.DataFrame, title: str, name: str, publish: bool = 
     colors = [BLUE if v >= 50 else GRAY for v in r["pct_top3"]]
     fig, ax = plt.subplots(figsize=(10, 0.5 * len(r) + 1.6))
     _hbars(ax, r.index, r["pct_top3"], colors, fmt="{:.0f} %", xmax=100)
-    ax.set_xlabel("Part des simulations où le groupe finit dans le top 3")
+    ax.set_xlabel("Part des simulations où le type de restaurant finit dans le top 3")
     ax.set_title(title, pad=24)
-    _subtitle(ax, f"{config.N_SIMULATIONS:,} simulations : échantillon de restaurants et poids des critères "
-                  "tirés au hasard".replace(",", " "))
+    _subtitle(ax, f"{config.N_SIMULATIONS:,} simulations avec des données et des critères légèrement modifiés · "
+                  "en bleu : résultat solide (plus de 50 %)".replace(",", " "))
     return fig, save(fig, name, publish)
 
 
 # ── 7. Zones ─────────────────────────────────────────────────────────────────
 def fig_zones(scores: pd.DataFrame, title: str, name: str, publish: bool = False):
     s = scores.sort_values("avis_typique", ascending=False)
-    labels = [f"{z}  ({int(n)} restos)" for z, n in zip(s.index, s["nb_etablissements"])]
-    top = s["score_opportunite"].nlargest(min(2, len(s))).index
+    labels = [f"{z}  ({int(n)} restaurants)" for z, n in zip(s.index, s["nb_etablissements"])]
+    top = s["avis_typique"].nlargest(min(2, len(s))).index
     colors = [BLUE if z in top else GRAY for z in s.index]
     fig, ax = plt.subplots(figsize=(10, 0.5 * len(s) + 1.6))
     _hbars(ax, labels, s["avis_typique"], colors, fmt="{:.1f}")
     ax.set_xlabel("Avis typiques par établissement (= clients attirés par chaque restaurant)")
     ax.set_title(title, pad=24)
-    _subtitle(ax, "En bleu : les 2 meilleurs scores d'opportunité (demande, concurrence, marge)")
+    _subtitle(ax, "En bleu : les 2 zones où chaque restaurant attire le plus de clients")
     return fig, save(fig, name, publish)
 
 
@@ -331,15 +333,16 @@ def fig_dashboard(kpis: list[tuple[str, str]], concepts: pd.DataFrame, robust: p
                           top=0.86, bottom=0.07, left=0.16, right=0.97)
     fig.text(0.16, 0.955, "Ouvrir un restaurant à Niamey : ce que disent les données",
              fontsize=19, fontweight="bold", color=INK)
-    fig.text(0.16, 0.915, "Analyse de fiches Google Maps · notes corrigées · modèle d'opportunité "
-             "testé par simulation", fontsize=11, color=INK_2)
+    fig.text(0.16, 0.915, "D'après les fiches Google Maps · score d'opportunité = beaucoup de clients "
+             "et peu de concurrents", fontsize=11, color=INK_2)
     for i, (label, value) in enumerate(kpis[:4]):
         ax = fig.add_subplot(gs[0, i])
         ax.axis("off")
         ax.add_patch(plt.Rectangle((0, 0), 1, 1, transform=ax.transAxes, facecolor="#f0efec",
                                    edgecolor="none", zorder=0))
-        ax.text(0.06, 0.64, value, fontsize=18 if len(value) < 14 else 13, fontweight="bold",
-                color=INK, transform=ax.transAxes, va="center")
+        long = len(value) >= 14     # un nom long passe sur deux lignes, en plus petit
+        ax.text(0.06, 0.64, textwrap.fill(value, 15) if long else value, fontsize=13 if long else 18,
+                fontweight="bold", color=INK, transform=ax.transAxes, va="center", linespacing=1.15)
         ax.text(0.06, 0.2, label, fontsize=9.5, color=INK_2, transform=ax.transAxes, va="center")
 
     ax1 = fig.add_subplot(gs[1, :2])
@@ -347,13 +350,13 @@ def fig_dashboard(kpis: list[tuple[str, str]], concepts: pd.DataFrame, robust: p
     colors = [BLUE if v >= 50 else GRAY for v in c["pct_top3"]]
     _hbars(ax1, c.index, c["score_opportunite"], colors, fmt="{:.2f}", xmax=1)
     ax1.set_title("Quel type de restaurant ? (score d'opportunité, 0 à 1)", fontsize=12)
-    ax1.set_xlabel("Bleu = dans le top 3 dans plus de 50 % des simulations")
+    ax1.set_xlabel("En bleu : top 3 dans plus de 50 % des simulations")
 
     ax2 = fig.add_subplot(gs[1, 2:])
     z = zones.sort_values("score_opportunite", ascending=False)
-    zc = [BLUE if i < 2 else GRAY for i in range(len(z))]
-    _hbars(ax2, [f"{n} ({int(k)} restos)" for n, k in zip(z.index, z["nb_etablissements"])],
+    zc = [BLUE if i < 1 else GRAY for i in range(len(z))]
+    _hbars(ax2, [f"{n} ({int(k)} restaurants)" for n, k in zip(z.index, z["nb_etablissements"])],
            z["score_opportunite"], zc, fmt="{:.2f}", xmax=1)
     ax2.set_title("Où ? (score d'opportunité par arrondissement)", fontsize=12)
-    ax2.set_xlabel("Position estimée d'après les Plus Codes Google")
+    ax2.set_xlabel("En bleu : l'arrondissement n°1 · position estimée d'après les adresses Google")
     return fig, save(fig, "00_tableau_de_bord", publish)

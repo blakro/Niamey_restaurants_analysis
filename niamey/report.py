@@ -25,6 +25,11 @@ def pval(p: float) -> str:
     return "p < 0,001" if p < 0.001 else f"p = {fr(p, 2)}"
 
 
+def _verdict(p: float) -> str:
+    """Le résultat d'un test, en clair, suivi de sa valeur p."""
+    return f"{'écart net' if p < 0.05 else 'écart non concluant'}, {pval(p)}"
+
+
 def _top_concepts(r) -> pd.DataFrame:
     c = r.concepts.join(r.concepts_robust)
     robust = c[c["pct_top3"] >= 50].sort_values(["pct_top3", "score_opportunite"], ascending=False)
@@ -55,17 +60,18 @@ def findings(r) -> list[str]:
         f"({fr(s['pct_reliable'])} %) ont une note vraiment solide (au moins {config.RELIABLE_REVIEWS} avis).",
         f"**{fr(s['n_five_star_le5'])} des {fr(s['n_five_star'])} restaurants notés 5★ ont 5 avis ou moins.** "
         f"C'est pourquoi on utilise une *note corrigée*, qui ne se laisse pas impressionner par 1 ou 2 avis.",
-        f"**Aucun type de cuisine n'est mieux noté qu'un autre** de façon fiable ({pval(s['kruskal_p'])}). "
-        f"Ce qui distingue les concepts, c'est la **demande** (clients par établissement) et la **concurrence**.",
+        f"**Aucun type de restaurant n'est mieux noté qu'un autre** : les écarts de notes sont trop faibles "
+        f"pour être distingués du hasard ({pval(s['kruskal_p'])}). Ce qui distingue les types de restaurant, "
+        f"c'est la **demande** (clients par établissement) et la **concurrence**.",
     ]
     lines = [f"**{name}** ({int(row.nb_etablissements)} établissements, {fr(row.avis_typique, 1)} avis "
-             f"typiques chacun, top 3 dans {fr(row.pct_top3)} % des simulations)" for name, row in top.iterrows()]
-    items.append("**Concepts les plus prometteurs** : " + " ; ".join(lines)
-                 + f". À comparer avec {fr(generic, 1)} avis pour un restaurant généraliste.")
+             f"typiques chacun, dans le top 3 de {fr(row.pct_top3)} % des simulations)" for name, row in top.iterrows()]
+    items.append("**Types de restaurant les plus prometteurs** : " + " ; ".join(lines)
+                 + f". À comparer avec {fr(generic, 1)} avis typiques pour un restaurant généraliste.")
     items.append(
-        "**Concepts saturés : " + "** et **".join(worst.index) + "** — "
-        + " ; ".join(f"{int(row.nb_etablissements)} établissements, seulement {fr(row.avis_typique, 1)} avis chacun"
-                     for _, row in worst.iterrows()) + ".")
+        "**Types de restaurant saturés** : "
+        + " et ".join(f"**{name}** ({int(row.nb_etablissements)} établissements, seulement "
+                      f"{fr(row.avis_typique, 1)} avis typiques chacun)" for name, row in worst.iterrows()) + ".")
     if len(big) == 2:
         hi, lo = big.sort_values("avis_typique", ascending=False).index
         items.append(
@@ -78,9 +84,10 @@ def findings(r) -> list[str]:
             f"restaurant dans ce dernier. Par arrondissement, **{arr_top.name}** arrive en tête "
             f"(n°1 dans {fr(arr_top.pct_top3)} % des simulations).")
     items.append(
-        f"**Un site web va de pair avec {fr(ratio_web)}× plus d'avis** (médiane {fr(s['median_reviews_web'], 1)} "
-        f"contre {fr(s['median_reviews_noweb'], 1)}, {pval(s['p_web_reviews'])}), **mais pas avec une "
-        f"meilleure note** ({pval(s['p_web_score'])}) : c'est un levier de visibilité, pas de qualité.")
+        f"**Un site web va de pair avec environ {fr(ratio_web)}× plus d'avis** (médiane : "
+        f"{fr(s['median_reviews_web'], 1)} avis avec un site, {fr(s['median_reviews_noweb'], 1)} sans ; "
+        f"{_verdict(s['p_web_reviews'])}), **mais pas avec une meilleure note** "
+        f"({_verdict(s['p_web_score'])}) : c'est un levier de visibilité, pas de qualité.")
     return items
 
 
@@ -106,10 +113,13 @@ def readme_block(r) -> str:
     # Pas de date : le bloc ne change que si les données ou le code changent
     # (la vérification automatique sur GitHub compare ce bloc au résultat attendu).
     parts = [START, "", "*Chiffres calculés automatiquement par `python run_pipeline.py` — "
-             "ne pas modifier ce bloc à la main.*", ""]
+             "ne pas modifier ce bloc à la main.*", "",
+             "Un mot vous échappe (« avis typiques », « simulations », « p »…) ? "
+             "Voir le [petit glossaire](#-petit-glossaire).", ""]
     parts += [f"{i}. {t}" for i, t in enumerate(findings(r), 1)]
     if len(r.leads):
-        parts += ["", "**Pistes concrètes (type × lieu)** — un concept prometteur là où il est absent :", ""]
+        parts += ["", "**Pistes concrètes (type × lieu)** — un type de restaurant prometteur, dans un pôle "
+                  "où il est absent ou presque :", ""]
         parts += [f"- {t}" for t in leads_lines(r)]
     parts += ["", f"> {CAVEAT}", "", END]
     return "\n".join(parts)
@@ -152,12 +162,12 @@ def _table(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
-def _ranking_table(scores: pd.DataFrame, robust: pd.DataFrame, top_label: str) -> str:
+def _ranking_table(scores: pd.DataFrame, robust: pd.DataFrame, top_label: str, group_label: str) -> str:
     t = scores.join(robust).reset_index()
     name_col = t.columns[0]
     out = pd.DataFrame({
         "Rang": t["rang"],
-        "Groupe": "**" + t[name_col].astype(str) + "**",
+        group_label: "**" + t[name_col].astype(str) + "**",
         "Établissements": t["nb_etablissements"].astype(int),
         "Avis typiques / établissement": t["avis_typique"].map(lambda v: fr(v, 1)),
         "Note corrigée moyenne": t["note_moyenne"].map(lambda v: fr(v, 2)),
@@ -228,8 +238,8 @@ def write_results_md(r, path=config.RESULTS_MD) -> None:
 | Restaurants sans aucun avis | {fr(s['n_no_review'])} |
 | Restaurants avec moins de 5 avis | {fr(s['pct_lt5_reviews'])} % |
 | Restaurants notés 5★ dont la note repose sur 5 avis ou moins | {fr(s['n_five_star_le5'])} sur {fr(s['n_five_star'])} |
-| Lien entre nombre d'avis et note (Spearman) | ρ = {fr(s['spearman_rho'], 2)} ({pval(s['spearman_p'])}) : plus un restaurant a d'avis, plus sa note est « réaliste » |
-| Les notes diffèrent-elles selon le type de cuisine ? (Kruskal-Wallis, {s['kruskal_groups']} types) | Non : {pval(s['kruskal_p'])} |
+| Lien entre nombre d'avis et note | Plus un restaurant a d'avis, moins sa note est « parfaite » (corrélation de Spearman ρ = {fr(s['spearman_rho'], 2)}, {pval(s['spearman_p'])}) |
+| Les notes diffèrent-elles selon le type de restaurant ? ({s['kruskal_groups']} types comparés) | {'Oui' if s['kruskal_p'] < 0.05 else 'Non'} (test de Kruskal-Wallis, {pval(s['kruskal_p'])}) |
 | Avis (médiane) avec / sans site web | {fr(s['median_reviews_web'], 1)} / {fr(s['median_reviews_noweb'], 1)} ({pval(s['p_web_reviews'])}) |
 | Note (médiane, ≥ {config.RELIABLE_REVIEWS} avis) avec / sans site web | {fr(s['median_score_web'], 1)} / {fr(s['median_score_noweb'], 1)} ({pval(s['p_web_score'])}) |
 
@@ -237,6 +247,9 @@ def write_results_md(r, path=config.RESULTS_MD) -> None:
 ({fr(s['market_mean_score'], 2)}★) avant ses vrais avis. Exemple : 5★ sur 1 avis devient
 {fr((config.PRIOR_REVIEWS * s['market_mean_score'] + 5) / (config.PRIOR_REVIEWS + 1), 2)}★, alors que 4,9★ sur
 443 avis reste à {fr((config.PRIOR_REVIEWS * s['market_mean_score'] + 443 * 4.9) / (config.PRIOR_REVIEWS + 443), 2)}★.
+
+*Comment lire « p » ?* C'est la probabilité d'observer un écart au moins aussi grand par pur hasard.
+En dessous de 0,05, on considère que l'écart est réel ; au-dessus, on ne peut rien conclure.
 
 ![Notes corrigées](docs/figures/02_notes_corrigees.png)
 
@@ -258,10 +271,12 @@ Score = {fr(w['demande'] * 100)} % **demande** + {fr(w['concurrence'] * 100)} % 
 {config.MIN_CONCEPT_SIZE} établissements sont classés ; « Restaurant généraliste », « Hôtel-restaurant »
 et « Cantine & traiteur » servent de référence.
 
-{_ranking_table(r.concepts, r.concepts_robust, "Top 3 (simulations)")}
+{_ranking_table(r.concepts, r.concepts_robust, "Top 3 (simulations)", "Type de restaurant")}
 
+*Demande*, *Concurrence* et *Marge* : les trois critères, notés de 0 (défavorable) à 1 (favorable) ; par
+exemple, « Concurrence = 1 » désigne le type qui compte le moins d'établissements.
 *Top 3 (simulations)* : part des {fr(config.N_SIMULATIONS)} simulations (échantillon de restaurants et poids des
-critères tirés au hasard) où le type finit dans les 3 premiers. **Au-dessus de 50 %, le résultat est robuste.**
+critères tirés au hasard) où le type finit dans les 3 premiers. **Au-dessus de 50 %, le résultat est solide.**
 *Confiance* : Bonne = au moins 8 établissements avec une note solide, Moyenne = 4 à 7, Faible = moins de 4.
 
 ![Matrice d'opportunité](docs/figures/05_matrice_opportunite.png)
@@ -276,25 +291,34 @@ proche (référentiel approximatif : `data/raw/niamey_quartiers_reference.csv`).
 
 ### Par arrondissement
 
-{_ranking_table(r.arrondissements, r.arrondissements_robust, "N°1 (simulations)")}
+{_ranking_table(r.arrondissements, r.arrondissements_robust, "N°1 (simulations)", "Arrondissement")}
+
+*N°1 (simulations)* : part des {fr(config.N_SIMULATIONS)} simulations où l'arrondissement finit premier
+(avec seulement {len(r.arrondissements)} arrondissements, un « top 3 » ne voudrait rien dire).
 
 ![Arrondissements](docs/figures/10_zones_arrondissements.png)
 
 ### Par pôle de restauration
 
 Un **pôle** est un groupe d'au moins {config.DBSCAN_MIN_SAMPLES} restaurants situés à moins de
-{config.DBSCAN_EPS_M} m les uns des autres (algorithme DBSCAN). On en trouve {s['n_poles']}, qui regroupent
+{config.DBSCAN_EPS_M} m les uns des autres. On en trouve {s['n_poles']}, qui regroupent
 {fr(s['n_in_poles'])} restaurants ; les {len(r.poles)} pôles d'au moins {config.MIN_ZONE_SIZE} restaurants sont classés
-ci-dessous. Attention : la plupart sont petits (confiance *faible*), seul le contraste entre les deux grands
-pôles est vraiment solide.
+ci-dessous.
 
-{_ranking_table(r.poles, r.poles_robust, "Top 3 (simulations)")}
+> **À lire avec prudence.** Les petits pôles arrivent en tête surtout parce qu'ils comptent peu de
+> concurrents, mais leur confiance est *faible* : leur rang change beaucoup d'une simulation à l'autre.
+> Le seul résultat vraiment solide est le contraste entre les deux grands pôles : à taille comparable,
+> l'un attire nettement plus de clients par restaurant que l'autre.
+
+{_ranking_table(r.poles, r.poles_robust, "Top 3 (simulations)", "Pôle")}
 
 ![Pôles](docs/figures/08_carte_poles.png)
 
 ## 5. Pistes concrètes : quel type, à quel endroit ?
 
-Pour les types les plus prometteurs, les pôles où ils sont absents (ou presque) :
+Pour les types de restaurant les plus prometteurs, les pôles où ils sont absents (ou presque).
+Le *score de la piste* (0 à 1) combine le score du type (40 %), le score du pôle (30 %) et la
+fréquentation totale du pôle (30 %) : un type absent d'un pôle très fréquenté vaut plus qu'absent d'un pôle désert.
 
 {_table(leads) if len(leads) else "_Aucune piste._"}
 

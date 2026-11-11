@@ -51,6 +51,9 @@ h2 { font-size: 22px; margin: 44px 0 12px; }
 ol.findings { padding-left: 1.4em; margin: 0; }
 ol.findings li { margin: 0 0 12px; padding-left: 4px; }
 ul.leads { padding-left: 1.2em; }
+.glossary { margin: 0; }
+.glossary dt { font-weight: 700; margin-top: 12px; }
+.glossary dd { margin: 2px 0 0; color: var(--ink-2); max-width: 75ch; }
 .callout {
   background: var(--warn-bg); border-left: 4px solid var(--warn-line); border-radius: 8px;
   padding: 12px 16px; margin: 20px 0 0; color: var(--ink);
@@ -88,10 +91,26 @@ def _steps() -> str:
                                    f"{config.DBSCAN_MIN_SAMPLES} restaurants à moins de {config.DBSCAN_EPS_M} m."),
         ("🎯 Comparer", f"Score d'opportunité : clients par établissement ({w['demande']} %), "
                        f"peu de concurrents ({w['concurrence']} %), marge de progression ({w['marge']} %)."),
-        ("✅ Vérifier", f"{report.fr(config.N_SIMULATIONS)} simulations : un résultat est jugé robuste s'il reste "
+        ("✅ Vérifier", f"{report.fr(config.N_SIMULATIONS)} simulations : un résultat est jugé solide s'il reste "
                        "dans le top 3 plus d'une fois sur deux."),
     ]
     return "\n".join(f"<li><b>{html.escape(t)}</b><span>{html.escape(d)}</span></li>" for t, d in items)
+
+
+def _glossary() -> str:
+    items = [
+        ("Avis typiques", "Le nombre d'avis Google d'un établissement « ordinaire » d'un groupe. On s'en sert comme "
+                          "indice de fréquentation : en général, plus un lieu a de clients, plus il reçoit d'avis."),
+        ("Note corrigée", "La note Google, rendue prudente quand elle repose sur très peu d'avis."),
+        ("Pôle de restauration", f"Un groupe d'au moins {config.DBSCAN_MIN_SAMPLES} restaurants situés à moins de "
+                                 f"{config.DBSCAN_EPS_M} m les uns des autres, comme une « rue des restaurants »."),
+        ("Simulations", f"On refait le classement {report.fr(config.N_SIMULATIONS)} fois en modifiant légèrement les "
+                        "données et les critères. Un résultat qui revient plus d'une fois sur deux est jugé solide."),
+        ("Médiane", "La valeur « du milieu » : la moitié des restaurants est au-dessus, l'autre moitié en dessous."),
+        ("p", "La probabilité qu'un écart soit dû au seul hasard. En dessous de 0,05, on considère que l'écart est "
+              "réel ; au-dessus, on ne peut rien conclure."),
+    ]
+    return "\n".join(f"<dt>{html.escape(t)}</dt><dd>{html.escape(d)}</dd>" for t, d in items)
 
 
 def build(r) -> str:
@@ -119,8 +138,9 @@ def build(r) -> str:
   <header>
     <p class="eyebrow">Analyse de données · Niamey (Niger)</p>
     <h1>Quel restaurant ouvrir à Niamey, et où&nbsp;?</h1>
-    <p class="lead">Analyse de {report.fr(s['n_raw'])} fiches Google Maps : types de restaurants, notes corrigées,
-      pôles de restauration et un score d'opportunité testé par {report.fr(config.N_SIMULATIONS)} simulations.</p>
+    <p class="lead">On a étudié les {report.fr(s['n_raw'])} fiches Google Maps des restaurants de la ville — leur type,
+      leur note, leur nombre d'avis et leur emplacement — pour repérer où il reste de la place :
+      beaucoup de clients et peu de concurrents.</p>
     <nav class="actions" aria-label="Liens principaux">
       <a class="btn primary" href="{map_name}">🗺️ Ouvrir la carte interactive</a>
       <a class="btn" href="{results_url}">📊 Résultats détaillés</a>
@@ -147,6 +167,13 @@ def build(r) -> str:
   </section>
 
   <section>
+    <h2>Les mots utilisés</h2>
+    <dl class="glossary">
+{_glossary()}
+    </dl>
+  </section>
+
+  <section>
     <h2>La carte</h2>
     <p>Chaque point est un restaurant ; cliquez dessus pour voir sa fiche. Le bouton « calques », en haut à
       droite de la carte, permet de n'afficher qu'un type de restaurant.
@@ -159,12 +186,12 @@ def build(r) -> str:
     <figure class="figure">
       <img src="figures/05_matrice_opportunite.png" loading="lazy"
            alt="Matrice d'opportunité : chaque type de restaurant placé selon son nombre d'établissements et le nombre d'avis typique par établissement.">
-      <figcaption>En haut à gauche : beaucoup de clients par établissement et peu de concurrents. En bas à droite : marché saturé.</figcaption>
+      <figcaption>Où reste-t-il de la place ? En haut à gauche : beaucoup de clients par établissement et peu de concurrents. En bas à droite : marché saturé.</figcaption>
     </figure>
     <figure class="figure">
       <img src="figures/09_robustesse_concepts.png" loading="lazy"
            alt="Part des simulations où chaque type de restaurant termine dans le top 3.">
-      <figcaption>Un type de restaurant est jugé robuste s'il finit dans le top 3 dans plus de la moitié des simulations.</figcaption>
+      <figcaption>Un résultat est jugé solide si le type de restaurant finit dans le top 3 dans plus de la moitié des simulations.</figcaption>
     </figure>
     <figure class="figure">
       <img src="figures/00_tableau_de_bord.png" loading="lazy"

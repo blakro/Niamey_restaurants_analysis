@@ -6,7 +6,7 @@ venv/
 env/
 .ipynb_checkpoints/
 
-# Données générées (régénérables via les notebooks)
+# Données générées (régénérables avec `python run_pipeline.py`)
 data/processed/
 !data/processed/.gitkeep
 

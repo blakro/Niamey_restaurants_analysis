@@ -144,3 +144,15 @@ def test_homepage_links_exist_and_numbers_match():
     for label, value in report.dashboard_kpis(r):          # mêmes chiffres que le README
         assert escape(value) in page and escape(label) in page
     assert report.readme_block(r) == report.readme_block(r)  # pas de date : sortie stable
+
+
+# ── Carte ────────────────────────────────────────────────────────────────────
+def test_map_is_reproducible(tmp_path):
+    """Deux exécutions sur les mêmes données donnent exactement le même fichier."""
+    from niamey import maps, pipeline
+    r = pipeline.compute()
+    zones = pipeline.all_poles(r.geo)
+    a, b = tmp_path / "a.html", tmp_path / "b.html"
+    maps.build_map(r.geo, zones, path=a)
+    maps.build_map(r.geo, zones, path=b)
+    assert a.read_bytes() == b.read_bytes()

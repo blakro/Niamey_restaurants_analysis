@@ -95,7 +95,7 @@ def make_figures(r: Results, show: bool = False) -> None:
         viz.fig_website(r.geo, s["p_web_reviews"], s["p_web_score"]),
         viz.fig_scores_by_concept(r.geo, s["kruskal_p"]),
         viz.fig_static_map(r.geo, publish=True),
-        viz.fig_robustness(r.concepts_robust, "Le classement des concepts résiste-t-il au hasard ?",
+        viz.fig_robustness(r.concepts_robust, "Le classement des types de restaurant résiste-t-il au hasard ?",
                            "09_robustesse_concepts", publish=True),
         viz.fig_zones(r.arrondissements, "Clients attirés par restaurant, par arrondissement",
                       "10_zones_arrondissements", publish=True),
